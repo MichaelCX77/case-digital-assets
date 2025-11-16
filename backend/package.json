@@ -1,16 +1,6 @@
 {
-  "name": "case_itau_nodejs",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "express": "^4.21.2",
-    "sqlite3": "^5.1.7"
-  }
+    "scripts": {
+        "build:all": "cd services/clientes && npm run build && cd ../contas && npm run build && cd ../transacoes && npm run build && cd ../../gateway && npm run build",
+        "start:pm2": "npm run build:all && pm2 start ecosystem.config.js"
+    }
 }
