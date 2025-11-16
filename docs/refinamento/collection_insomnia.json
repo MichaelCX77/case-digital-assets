@@ -1,0 +1,189 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2025-11-16T11:34:46.000Z",
+  "__export_source": "copilot-insomnia:custom",
+  "resources": [
+    {
+      "_id": "wrk_gestao_bancaria",
+      "parentId": null,
+      "modified": 0,
+      "created": 0,
+      "name": "API Gestão Bancária",
+      "description": "API para gerenciamento de clientes, contas correntes, vínculos e transações financeiras.",
+      "_type": "workspace"
+    },
+    {
+      "_id": "env_gestao_bancaria_base",
+      "parentId": "wrk_gestao_bancaria",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "https://api.exemplo.com/v1"
+      },
+      "_type": "environment"
+    },
+    {
+      "_id": "req_clientes_get",
+      "parentId": "wrk_gestao_bancaria",
+      "name": "Listar clientes",
+      "method": "GET",
+      "url": "{{ base_url }}/clientes",
+      "parameters": [
+        { "name": "page", "value": "1" },
+        { "name": "size", "value": "10" }
+      ],
+      "description": "Retorna todos os clientes cadastrados.",
+      "_type": "request"
+    },
+    {
+      "_id": "req_clientes_post",
+      "parentId": "wrk_gestao_bancaria",
+      "name": "Criar cliente",
+      "method": "POST",
+      "url": "{{ base_url }}/clientes",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"João da Silva\",\n  \"email\": \"joao@email.com\",\n  \"senha\": \"SenhaForte123\",\n  \"perfil_acesso\": \"titular\"\n}"
+      },
+      "description": "Cria um novo cliente.",
+      "_type": "request"
+    },
+    {
+      "_id": "req_clientes_id_get",
+      "parentId": "wrk_gestao_bancaria",
+      "name": "Obter cliente por ID",
+      "method": "GET",
+      "url": "{{ base_url }}/clientes/1",
+      "description": "Busca dados do cliente pelo ID.",
+      "_type": "request"
+    },
+    {
+      "_id": "req_clientes_id_put",
+      "parentId": "wrk_gestao_bancaria",
+      "name": "Atualizar cliente",
+      "method": "PUT",
+      "url": "{{ base_url }}/clientes/1",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"João S. Silva\",\n  \"email\": \"joao.silva@email.com\",\n  \"senha\": \"NovaSenha2025\",\n  \"perfil_acesso\": \"titular\"\n}"
+      },
+      "description": "Atualiza os dados do cliente.",
+      "_type": "request"
+    },
+    {
+      "_id": "req_clientes_id_delete",
+      "parentId": "wrk_gestao_bancaria",
+      "name": "Remover cliente",
+      "method": "DELETE",
+      "url": "{{ base_url }}/clientes/1",
+      "description": "Remove o cliente especificado.",
+      "_type": "request"
+    },
+    {
+      "_id": "req_clientes_id_contas_get",
+      "parentId": "wrk_gestao_bancaria",
+      "name": "Contas vinculadas ao cliente",
+      "method": "GET",
+      "url": "{{ base_url }}/clientes/1/contas",
+      "description": "Lista as contas correntes às quais o cliente está vinculado.",
+      "_type": "request"
+    },
+    {
+      "_id": "req_clientes_id_contas_post",
+      "parentId": "wrk_gestao_bancaria",
+      "name": "Vincular conta ao cliente",
+      "method": "POST",
+      "url": "{{ base_url }}/clientes/1/contas",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id_conta\": 109\n}"
+      },
+      "description": "Vincula uma conta ao cliente.",
+      "_type": "request"
+    },
+    {
+      "_id": "req_contas_get",
+      "parentId": "wrk_gestao_bancaria",
+      "name": "Listar contas correntes",
+      "method": "GET",
+      "url": "{{ base_url }}/contas",
+      "description": "Retorna todas as contas correntes cadastradas.",
+      "_type": "request"
+    },
+    {
+      "_id": "req_contas_post",
+      "parentId": "wrk_gestao_bancaria",
+      "name": "Criar conta corrente",
+      "method": "POST",
+      "url": "{{ base_url }}/contas",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"saldo\": 0.0\n}"
+      },
+      "description": "Cria uma nova conta corrente.",
+      "_type": "request"
+    },
+    {
+      "_id": "req_contas_id_get",
+      "parentId": "wrk_gestao_bancaria",
+      "name": "Obter conta corrente por ID",
+      "method": "GET",
+      "url": "{{ base_url }}/contas/101",
+      "description": "Busca dados de uma conta corrente pelo ID.",
+      "_type": "request"
+    },
+    {
+      "_id": "req_contas_id_delete",
+      "parentId": "wrk_gestao_bancaria",
+      "name": "Remover conta corrente",
+      "method": "DELETE",
+      "url": "{{ base_url }}/contas/101",
+      "description": "Remove a conta corrente especificada.",
+      "_type": "request"
+    },
+    {
+      "_id": "req_contas_id_clientes_get",
+      "parentId": "wrk_gestao_bancaria",
+      "name": "Clientes vinculados à conta",
+      "method": "GET",
+      "url": "{{ base_url }}/contas/101/clientes",
+      "description": "Lista os clientes vinculados à conta corrente.",
+      "_type": "request"
+    },
+    {
+      "_id": "req_contas_id_clientes_post",
+      "parentId": "wrk_gestao_bancaria",
+      "name": "Vincular cliente à conta",
+      "method": "POST",
+      "url": "{{ base_url }}/contas/101/clientes",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id_cliente\": 1\n}"
+      },
+      "description": "Vincula um cliente à conta corrente.",
+      "_type": "request"
+    },
+    {
+      "_id": "req_contas_id_transacoes_get",
+      "parentId": "wrk_gestao_bancaria",
+      "name": "Histórico de transações da conta",
+      "method": "GET",
+      "url": "{{ base_url }}/contas/101/transacoes",
+      "description": "Lista o histórico de transações associadas à conta.",
+      "_type": "request"
+    },
+    {
+      "_id": "req_contas_id_transacoes_post",
+      "parentId": "wrk_gestao_bancaria",
+      "name": "Registrar transação",
+      "method": "POST",
+      "url": "{{ base_url }}/contas/101/transacoes",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"tipo\": \"DEPOSITO\",\n  \"valor\": 200.00,\n  \"id_cliente_operador\": 1\n}"
+      },
+      "description": "Registra uma nova operação financeira na conta corrente.",
+      "_type": "request"
+    }
+  ]
+}
