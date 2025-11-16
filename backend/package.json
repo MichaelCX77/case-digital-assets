@@ -1,14 +1,16 @@
 {
-    "name": "backend",
-    "private": true,
-    "scripts": {
-        "install:all": "npm --prefix services/clientes install && npm --prefix services/contas install && npm --prefix services/transacoes install && npm --prefix gateway install",
-        "build:all": "npm --prefix services/clientes run build && npm --prefix services/contas run build && npm --prefix services/transacoes run build && npm --prefix gateway run build",
-        "setup:all": "npm run install:all && npm run build:all",
-        "start:pm2": "npm run setup:all && pm2 start ecosystem.config.js"
-    },
-    "devDependencies": {
-        "concurrently": "^9.2.1",
-        "ts-node-dev": "^2.0.0"
-    }
+  "name": "backend",
+  "private": true,
+  "scripts": {
+    "install:all": "npm --prefix services/clientes install && npm --prefix services/contas install && npm --prefix services/transacoes install && npm --prefix gateway install",
+    "build:all": "npm --prefix services/clientes run build && npm --prefix services/contas run build && npm --prefix services/transacoes run build && npm --prefix gateway run build",
+    "migrate:all": "cd services/clientes && npx prisma migrate dev --name init --skip-seed --schema prisma/schema.prisma && cd ../../services/contas && npx prisma migrate dev --name init --skip-seed --schema prisma/schema.prisma && cd ../../services/transacoes && npx prisma migrate dev --name init --skip-seed --schema prisma/schema.prisma",
+    "seed:all": "cd services/clientes && npx prisma db seed --schema prisma/schema.prisma && cd ../../services/contas && npx prisma db seed --schema prisma/schema.prisma && cd ../../services/transacoes && npx prisma db seed --schema prisma/schema.prisma",
+    "setup:all": "npm run install:all && npm run build:all && npm run migrate:all && npm run seed:all",
+    "start:pm2": "npm run setup:all && pm2 start ecosystem.config.js"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "ts-node-dev": "^2.0.0"
+  }
 }
