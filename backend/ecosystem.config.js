@@ -3,35 +3,42 @@ module.exports = {
     {
       name: 'clientes-service',
       cwd: './services/clientes',
-      script: 'dist/main.js',
+      script: 'node_modules/ts-node/dist/bin.js',
+      args: 'src/main.ts',
       exec_mode: 'fork',
-      watch: true,
+      watch: ['src'],
       env: { NODE_ENV: 'development' },
+      autorestart: true
     },
     {
       name: 'contas-service',
       cwd: './services/contas',
-      script: 'dist/main.js',
+      script: 'node_modules/ts-node/dist/bin.js',
+      args: 'src/main.ts',
       exec_mode: 'fork',
-      watch: true,
+      watch: ['src'],
       env: { NODE_ENV: 'development' },
+      autorestart: true
     },
     {
       name: 'transacoes-service',
       cwd: './services/transacoes',
-      script: 'dist/main.js',
+      script: 'node_modules/ts-node/dist/bin.js',
+      args: 'src/main.ts',
       exec_mode: 'fork',
-      watch: true,
+      watch: ['src'],
       env: { NODE_ENV: 'development' },
+      autorestart: true
     },
     {
       name: 'gateway-service',
       cwd: './gateway',
-      script: 'dist/main.js',
+      script: 'node_modules/ts-node/dist/bin.js',
+      args: 'src/main.ts',
       exec_mode: 'fork',
-      watch: true,
+      watch: ['src'],
       env: { NODE_ENV: 'development' },
+      autorestart: true
     },
-    // adicione aqui outros serviços seguindo o mesmo padrão
   ],
 };

@@ -1,6 +1,14 @@
 {
+    "name": "backend",
+    "private": true,
     "scripts": {
-        "build:all": "cd services/clientes && npm run build && cd ../contas && npm run build && cd ../transacoes && npm run build && cd ../../gateway && npm run build",
-        "start:pm2": "npm run build:all && pm2 start ecosystem.config.js"
+        "install:all": "npm --prefix services/clientes install && npm --prefix services/contas install && npm --prefix services/transacoes install && npm --prefix gateway install",
+        "build:all": "npm --prefix services/clientes run build && npm --prefix services/contas run build && npm --prefix services/transacoes run build && npm --prefix gateway run build",
+        "setup:all": "npm run install:all && npm run build:all",
+        "start:pm2": "npm run setup:all && pm2 start ecosystem.config.js"
+    },
+    "devDependencies": {
+        "concurrently": "^9.2.1",
+        "ts-node-dev": "^2.0.0"
     }
 }
