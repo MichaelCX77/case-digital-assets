@@ -1,0 +1,21 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./contas.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model ContaCorrente {
+  id     Int    @id @default(autoincrement())
+  saldo  Float  @default(0)
+  clientes ContaCliente[]
+}
+
+model ContaCliente {
+  idConta   Int
+  idCliente Int
+  conta     ContaCorrente @relation(fields: [idConta], references: [id])
+  @@id([idConta, idCliente])
+}
