@@ -1,0 +1,548 @@
+openapi: 3.0.3
+info:
+  title: API de Gestão Bancária
+  description: API para gerenciamento de clientes, contas correntes, associações e transações financeiras.
+  version: 1.0.0
+servers:
+  - url: https://api.exemplo.com/v1
+
+paths:
+  /clientes:
+    get:
+      summary: Lista todos os clientes cadastrados
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            example: 1
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            example: 10
+      responses:
+        '200':
+          description: Lista de clientes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cliente'
+              examples:
+                exemplo1:
+                  summary: Exemplo de resposta com dois clientes
+                  value:
+                    - id_cliente: 1
+                      nome: "João da Silva"
+                      email: "joao@email.com"
+                      perfil_acesso: "titular"
+                    - id_cliente: 2
+                      nome: "Maria Souza"
+                      email: "maria@email.com"
+                      perfil_acesso: "operador"
+    post:
+      summary: Cria um novo cliente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClienteInput'
+            examples:
+              exemplo1:
+                summary: Exemplo de criação de cliente
+                value:
+                  nome: "João da Silva"
+                  email: "joao@email.com"
+                  senha: "SenhaForte123"
+                  perfil_acesso: "titular"
+      responses:
+        '201':
+          description: Cliente criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+              examples:
+                exemplo1:
+                  summary: Cliente cadastrado com sucesso
+                  value:
+                    id_cliente: 3
+                    nome: "Ana Lima"
+                    email: "ana@email.com"
+                    perfil_acesso: "titular"
+
+  /clientes/{id_cliente}:
+    get:
+      summary: Busca dados de um cliente pelo ID
+      parameters:
+        - name: id_cliente
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Dados do cliente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+              examples:
+                exemplo1:
+                  summary: Retorno do cliente pesquisado
+                  value:
+                    id_cliente: 1
+                    nome: "João da Silva"
+                    email: "joao@email.com"
+                    perfil_acesso: "titular"
+        '404':
+          description: Cliente não encontrado
+
+    put:
+      summary: Atualiza dados de um cliente
+      parameters:
+        - name: id_cliente
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClienteInput'
+            examples:
+              exemplo1:
+                summary: Exemplo de atualização de cliente
+                value:
+                  nome: "João S. Silva"
+                  email: "joao.silva@email.com"
+                  senha: "NovaSenha2025"
+                  perfil_acesso: "titular"
+      responses:
+        '200':
+          description: Cliente atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+              examples:
+                exemplo1:
+                  summary: Dados atualizados
+                  value:
+                    id_cliente: 1
+                    nome: "João S. Silva"
+                    email: "joao.silva@email.com"
+                    perfil_acesso: "titular"
+        '404':
+          description: Cliente não encontrado
+
+    delete:
+      summary: Remove um cliente pelo ID
+      parameters:
+        - name: id_cliente
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Cliente removido
+        '404':
+          description: Cliente não encontrado
+
+  /clientes/{id_cliente}/contas:
+    get:
+      summary: Lista contas vinculadas ao cliente
+      parameters:
+        - name: id_cliente
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de contas vinculadas ao cliente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContaCorrente'
+              examples:
+                exemplo1:
+                  summary: Exemplo de resposta
+                  value:
+                    - id_conta: 101
+                      saldo: 1500.00
+                    - id_conta: 109
+                      saldo: 250.50
+    post:
+      summary: Vincula uma conta a um cliente
+      parameters:
+        - name: id_cliente
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_conta:
+                  type: integer
+            examples:
+              exemplo1:
+                summary: Exemplo de vínculo
+                value:
+                  id_conta: 109
+      responses:
+        '201':
+          description: Vínculo registrado
+
+  /contas:
+    get:
+      summary: Lista todas as contas correntes cadastradas
+      responses:
+        '200':
+          description: Lista de contas correntes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContaCorrente'
+              examples:
+                exemplo1:
+                  summary: Lista de contas
+                  value:
+                    - id_conta: 101
+                      saldo: 1500.00
+                    - id_conta: 109
+                      saldo: 250.50
+    post:
+      summary: Cria uma nova conta corrente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContaCorrenteInput'
+            examples:
+              exemplo1:
+                summary: Criação de conta com saldo inicial
+                value:
+                  saldo: 0.00
+      responses:
+        '201':
+          description: Conta corrente criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContaCorrente'
+              examples:
+                exemplo1:
+                  summary: Conta criada
+                  value:
+                    id_conta: 110
+                    saldo: 0.00
+
+  /contas/{id_conta}:
+    get:
+      summary: Busca dados de uma conta corrente pelo ID
+      parameters:
+        - name: id_conta
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Dados da conta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContaCorrente'
+              examples:
+                exemplo1:
+                  summary: Detalhes da conta
+                  value:
+                    id_conta: 101
+                    saldo: 1500.00
+        '404':
+          description: Conta corrente não encontrada
+    delete:
+      summary: Remove uma conta corrente pelo ID
+      parameters:
+        - name: id_conta
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Conta corrente removida
+        '404':
+          description: Conta corrente não encontrada
+
+  /contas/{id_conta}/clientes:
+    get:
+      summary: Lista clientes vinculados à conta corrente
+      parameters:
+        - name: id_conta
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de clientes vinculados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cliente'
+              examples:
+                exemplo1:
+                  summary: Cliente titular
+                  value:
+                    - id_cliente: 1
+                      nome: "João da Silva"
+                      email: "joao@email.com"
+                      perfil_acesso: "titular"
+    post:
+      summary: Vincula cliente à conta corrente
+      parameters:
+        - name: id_conta
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_cliente:
+                  type: integer
+            examples:
+              exemplo1:
+                summary: Exemplo de vínculo
+                value:
+                  id_cliente: 1
+      responses:
+        '201':
+          description: Vínculo registrado
+
+  /contas/{id_conta}/transacoes:
+    get:
+      summary: Lista o histórico de transações da conta corrente
+      parameters:
+        - name: id_conta
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de transações
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transacao'
+              examples:
+                exemplo1:
+                  summary: Histórico para a conta 101
+                  value:
+                    - id_transacao: 900
+                      id_conta: 101
+                      tipo: "DEPOSITO"
+                      valor: 500.00
+                      data_hora: "2025-11-16T09:01:00Z"
+                      saldo_antes: 1000.00
+                      saldo_depois: 1500.00
+                      id_cliente_operador: 1
+                    - id_transacao: 901
+                      id_conta: 101
+                      tipo: "SAQUE"
+                      valor: 300.00
+                      data_hora: "2025-11-16T09:10:00Z"
+                      saldo_antes: 1500.00
+                      saldo_depois: 1200.00
+                      id_cliente_operador: 1
+    post:
+      summary: Registra uma nova transação
+      parameters:
+        - name: id_conta
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransacaoInput'
+            examples:
+              exemplo1:
+                summary: Exemplo de depósito
+                value:
+                  tipo: "DEPOSITO"
+                  valor: 200.00
+                  id_cliente_operador: 1
+              exemplo2:
+                summary: Exemplo de saque
+                value:
+                  tipo: "SAQUE"
+                  valor: 100.00
+                  id_cliente_operador: 1
+      responses:
+        '201':
+          description: Transação registrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transacao'
+              examples:
+                exemplo1:
+                  summary: Retorno da transação
+                  value:
+                    id_transacao: 902
+                    id_conta: 101
+                    tipo: "DEPOSITO"
+                    valor: 200.00
+                    data_hora: "2025-11-16T11:44:00Z"
+                    saldo_antes: 1200.00
+                    saldo_depois: 1400.00
+                    id_cliente_operador: 1
+
+components:
+  schemas:
+    Cliente:
+      type: object
+      properties:
+        id_cliente:
+          type: integer
+          example: 1
+        nome:
+          type: string
+          example: "João da Silva"
+        email:
+          type: string
+          example: "joao@email.com"
+        perfil_acesso:
+          type: string
+          example: "titular"
+    ClienteInput:
+      type: object
+      properties:
+        nome:
+          type: string
+          example: "João da Silva"
+        email:
+          type: string
+          example: "joao@email.com"
+        senha:
+          type: string
+          format: password
+          example: "SenhaForte123"
+        perfil_acesso:
+          type: string
+          example: "titular"
+      required:
+        - nome
+        - email
+        - senha
+        - perfil_acesso
+
+    ContaCorrente:
+      type: object
+      properties:
+        id_conta:
+          type: integer
+          example: 101
+        saldo:
+          type: number
+          example: 1500.00
+      required:
+        - id_conta
+        - saldo
+    ContaCorrenteInput:
+      type: object
+      properties:
+        saldo:
+          type: number
+          default: 0
+          example: 0.00
+      required:
+        - saldo
+
+    Transacao:
+      type: object
+      properties:
+        id_transacao:
+          type: integer
+          example: 900
+        id_conta:
+          type: integer
+          example: 101
+        tipo:
+          type: string
+          enum: ['DEPOSITO', 'SAQUE', 'TRANSFERENCIA']
+          example: 'DEPOSITO'
+        valor:
+          type: number
+          example: 500.00
+        data_hora:
+          type: string
+          format: date-time
+          example: "2025-11-16T09:01:00Z"
+        saldo_antes:
+          type: number
+          example: 1000.00
+        saldo_depois:
+          type: number
+          example: 1500.00
+        id_cliente_operador:
+          type: integer
+          example: 1
+      required:
+        - id_transacao
+        - id_conta
+        - tipo
+        - valor
+        - data_hora
+        - saldo_antes
+        - saldo_depois
+        - id_cliente_operador
+    TransacaoInput:
+      type: object
+      properties:
+        tipo:
+          type: string
+          enum: ['DEPOSITO', 'SAQUE', 'TRANSFERENCIA']
+        valor:
+          type: number
+        id_cliente_operador:
+          type: integer
+      required:
+        - tipo
+        - valor
+        - id_cliente_operador

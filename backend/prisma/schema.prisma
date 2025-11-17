@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+//
+// USERS
+//
+model User {
+  id           String       @id @default(uuid()) @map("id_user")
+  name         String       @map("name")
+  email        String       @unique @map("email")
+  password     String       @map("password")
+  accessLevel  String       @map("access_level")
+
+  roleId       String?      @map("role_id")
+  role         Role?        @relation(fields: [roleId], references: [id])
+
+  accounts     UserAccount[]
+  transactions Transaction[] @relation("OperatorTransactions")
+
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  @@map("user")
+}
+
+//
+// ACCOUNT
+//
+model Account {
+  idAccount     String         @id @default(uuid()) @map("id_account")
+  balance       Float          @default(0) @map("balance")
+
+  users         UserAccount[]
+  transactions  Transaction[]
+
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+
+  @@map("account")
+}
+
+//
+// USER ↔ ACCOUNT (N:N)
+//
+model UserAccount {
+  accountId String @map("account_id")
+  userId    String @map("user_id")
+
+  account Account @relation(fields: [accountId], references: [idAccount], onDelete: Cascade, onUpdate: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@id([accountId, userId])
+  @@map("user_account")
+}
+
+//
+// TRANSACTIONS
+//
+model Transaction {
+  idTransaction     String    @id @default(uuid()) @map("id_transaction")
+  accountId         String    @map("account_id")
+  type              String    @map("type")
+  amount            Float     @map("amount")
+  timestamp         DateTime  @default(now()) @map("timestamp")
+  balanceBefore     Float     @map("balance_before")
+  balanceAfter      Float     @map("balance_after")
+  operatorUserId    String?   @map("operator_user_id")
+
+  account   Account @relation(fields: [accountId], references: [idAccount], onDelete: Cascade, onUpdate: Cascade)
+  operator  User?   @relation("OperatorTransactions", fields: [operatorUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("transaction")
+}
+
+//
+// ROLES
+//
+model Role {
+  id        String @id @default(uuid()) @map("id")
+  name      String @unique @map("name")
+
+  users     User[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("role")
+}
