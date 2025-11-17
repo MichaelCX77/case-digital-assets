@@ -3,7 +3,7 @@ import { UserRepository } from './user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { LinkAccountDto } from './dto/link-account.dto';
+import { VincularContaDto } from './dto/vincular-conta.dto';
 
 @Injectable()
 export class UserService {
@@ -15,48 +15,39 @@ export class UserService {
   }
 
   async create(data: CreateUserDto): Promise<UserResponseDto> {
-    if (!data) throw new BadRequestException("Data not received!");
+    if (!data) throw new BadRequestException("Dados não recebidos!");
     const exists = await this.repo.findByEmail(data.email);
-    if (exists) throw new BadRequestException("Email already registered");
+    if (exists) throw new BadRequestException("Email já cadastrado");
     const user = await this.repo.create(data);
     return new UserResponseDto(user);
   }
 
   async getUser(id: string): Promise<UserResponseDto> {
     const user = await this.repo.findById(id);
-    if (!user) throw new NotFoundException("User not found");
+    if (!user) throw new NotFoundException("Cliente não encontrado");
     return new UserResponseDto(user);
   }
 
   async update(id: string, data: UpdateUserDto): Promise<UserResponseDto> {
-    await this.getUser(id); // check existence
-
-    // Validate email uniqueness if it's being updated
-    if (data.email) {
-      const existingUser = await this.repo.findByEmail(data.email);
-      if (existingUser && existingUser.id !== id) {
-        throw new BadRequestException("Email already registered");
-      }
-    }
-
+    await this.getUser(id); // valida existência
     const user = await this.repo.update(id, data);
     return new UserResponseDto(user);
   }
 
   async delete(id: string): Promise<UserResponseDto> {
-    const user = await this.getUser(id); // return the old record before deletion
+    const user = await this.getUser(id); // retorna o antigo antes de deletar
     await this.repo.delete(id);
     return user;
   }
 
-  async accounts(userId: string): Promise<any[]> {
-    await this.getUser(userId); // check existence
-    return this.repo.listAccounts(userId);
+  async contas(userId: string): Promise<any[]> {
+    await this.getUser(userId); // valida existência
+    return this.repo.listContas(userId);
   }
 
-  async linkAccount(userId: string, dto: LinkAccountDto): Promise<any> {
+  async vincularConta(userId: string, dto: VincularContaDto): Promise<any> {
     await this.getUser(userId);
-    return this.repo.linkAccount(userId, dto.accountId);
+    return this.repo.vincularConta(userId, dto.accountId);
   }
 
   async getRoleNames(email: string): Promise<string[]> {

@@ -1,34 +1,62 @@
 routes:
-  clientes:
-    - path: /meus-dados
+  users:
+    - path: /my-data
       method: GET
       roles: ["OWNER", "OPERATOR", "ADMIN"]
       public: false
-    - path: /clientes
+    - path: /my-data
+      method: POST
+      roles: ["OWNER", "OPERATOR", "ADMIN"]
+      public: false
+    - path: /my-data
+      method: PUT
+      roles: ["OWNER", "OPERATOR", "ADMIN"]
+      public: false
+    - path: /users
       method: POST
       roles: []
       public: true
-    - path: /clientes
+    - path: /users
       method: GET
       roles: ["OPERATOR","ADMIN"]
       public: false
-
-  contas:
-    - path: /minhas-contas
+    - path: /users/:id
+      method: GET
+      roles: ["OPERATOR","ADMIN"]
+      public: false
+    - path: /users/:id
+      method: PUT
+      roles: ["ADMIN"]
+      public: false
+    - path: /users/:id
+      method: DELETE
+      roles: ["ADMIN"]
+      public: false
+    - path: /users/:id/accounts
       method: GET
       roles: ["OWNER", "OPERATOR", "ADMIN"]
       public: false
-    - path: /contas/*
+    - path: /users/:id/accounts
+      method: POST
+      roles: ["OWNER", "OPERATOR", "ADMIN"]
+      public: false
+
+  accounts:
+    - path: /my-accounts
+      method: GET
+      roles: ["OWNER", "OPERATOR", "ADMIN"]
+      public: false
+    - path: /accounts/*
       method: ALL
       roles: ["ADMIN"]
       public: false
 
-  transacoes:
-    - path: /minhas-transacoes
+  transactions:
+    - path: /my-transactions
       method: ALL
       roles: ["OWNER", "OPERATOR", "ADMIN"]
       public: false
-    - path: /transacoes/*
+    - path: /transactions/*
       method: ALL
       roles: ["OPERATOR", "ADMIN"]
       public: false

@@ -60,14 +60,15 @@ export class UserRepository {
     return this.prisma.user.delete({ where: { id } });
   }
 
-  async listAccounts(userId: string) {
+  async listContas(userId: string) {
     return this.prisma.userAccount.findMany({
       where: { userId },
       include: { account: true },
     });
   }
 
-  async linkAccount(userId: string, accountId: string) {
+  async vincularConta(userId: string, accountId: string) {
+
     const found = await this.prisma.userAccount.findUnique({
       where: { accountId_userId: { accountId, userId } }
     });
