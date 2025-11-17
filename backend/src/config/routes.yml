@@ -1,0 +1,34 @@
+routes:
+  clientes:
+    - path: /meus-dados
+      method: GET
+      roles: ["OWNER", "OPERATOR", "ADMIN"]
+      public: false
+    - path: /clientes
+      method: POST
+      roles: []
+      public: true
+    - path: /clientes
+      method: GET
+      roles: ["OPERATOR","ADMIN"]
+      public: false
+
+  contas:
+    - path: /minhas-contas
+      method: GET
+      roles: ["OWNER", "OPERATOR", "ADMIN"]
+      public: false
+    - path: /contas/*
+      method: ALL
+      roles: ["ADMIN"]
+      public: false
+
+  transacoes:
+    - path: /minhas-transacoes
+      method: ALL
+      roles: ["OWNER", "OPERATOR", "ADMIN"]
+      public: false
+    - path: /transacoes/*
+      method: ALL
+      roles: ["OPERATOR", "ADMIN"]
+      public: false

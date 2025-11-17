@@ -12,21 +12,18 @@ export class UserSeeder implements ISeeder {
         name: 'John Doe',
         email: 'john@example.com',
         password: '123456',
-        accessLevel: 'BASIC',
-        roleName: 'PRIMARY',
+        roleName: 'OWNER',
       },
       {
         name: 'Mary Smith',
         email: 'mary@example.com',
         password: '123456',
-        accessLevel: 'ADVANCED',
         roleName: 'OPERATOR',
       },
       {
         name: 'Administrator',
         email: 'admin@example.com',
         password: 'admin123',
-        accessLevel: 'TOTAL',
         roleName: 'ADMIN',
       },
     ];
@@ -41,14 +38,12 @@ export class UserSeeder implements ISeeder {
         update: {
           name: u.name,
           password: hash,
-          accessLevel: u.accessLevel,
           roleId: roles.get(u.roleName)!,
         },
         create: {
           name: u.name,
           email: u.email,
           password: hash,
-          accessLevel: u.accessLevel,
           roleId: roles.get(u.roleName)!,
         },
       });

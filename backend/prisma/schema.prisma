@@ -15,7 +15,6 @@ model User {
   name         String       @map("name")
   email        String       @unique @map("email")
   password     String       @map("password")
-  accessLevel  String       @map("access_level")
 
   roleId       String?      @map("role_id")
   role         Role?        @relation(fields: [roleId], references: [id])
