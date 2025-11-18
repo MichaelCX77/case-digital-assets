@@ -5,10 +5,14 @@ import { AccountRepository } from './account.repository';
 import { PrismaModule } from '../prisma/prisma.module';
 import { UserModule } from 'src/user/user.module';
 
+/**
+ * NestJS module that provides account domain features,
+ * including service, repository, and controller integration.
+ */
 @Module({
   imports: [PrismaModule, UserModule],
   controllers: [AccountController],
   providers: [AccountService, AccountRepository],
-  exports: [AccountService, AccountRepository] // <- AQUI! Precisa ter AccountRepository
+  exports: [AccountService, AccountRepository] // Need to export AccountRepository for usage in other modules.
 })
 export class AccountModule {}
