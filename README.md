@@ -1,9 +1,14 @@
-# Case Digital Assets Project — FullStack
+# Case Digital Assets Project — FullStack Backend
 
 This is the backend for the **Case Digital Assets** project (`MichaelCX77/case-digital-assets`).  
-Below are the steps to run the project locally with a single command.
+Below are instructions to run and understand the project locally with one command.
 
-## Solution_Diagram_AWS — Target Plateau
+---
+
+## Solution Diagram
+
+AWS solution diagram (Draw.io):  
+`docs/refinamento/diagrama_aws.drawio`
 
 ![](docs/refinamento/assets/aws_soluction_diagram.png)
 
@@ -13,6 +18,8 @@ Below are the steps to run the project locally with a single command.
 
 - [Node.js (v18+)](https://nodejs.org/)
 - [npm](https://www.npmjs.com/)
+- **No external database or Docker setup is required.**  
+  The project uses **embedded SQLite** via Prisma for local development.
 
 ---
 
@@ -25,17 +32,15 @@ Below are the steps to run the project locally with a single command.
    ```
 
 2. **Create or edit your environment file:**
-   > Make sure you have a `.env` in the `backend` folder with the required settings (database URL, secrets, etc).
-   > For development, SQLite is used by default — no further database or Docker setup needed!
-
-   Example (`.env`):
-   ```
-   DATABASE_URL="file:./dev.db"
-   ```
+   - Make sure you have a `.env` file in the `backend` folder, with the required settings (database URL, secrets, etc).
+   - For development, SQLite is used by default:
+     ```
+     DATABASE_URL="file:./dev.db"
+     ```
 
 ---
 
-## Running Locally (One Command)
+## Running Locally (Single Command)
 
 Just run:
 
@@ -44,42 +49,52 @@ npm run setup
 ```
 
 This script will:
-
-- Install all dependencies (`npm install`)
+- Install dependencies (`npm install`)
 - Apply database migrations (`npm run migrate:deploy`)
 - Start the backend in **development mode with hot reload** (`npm run start:dev`)
-- Prisma will use the default local SQLite file (`dev.db`) for data storage.
+- Prisma will use the local SQLite database file (`dev.db`).
+
+### Application Port
+
+The API is available on port **3000** by default:
+```
+http://localhost:3000/
+```
+
+### Swagger Documentation
+
+API documentation and testing via Swagger UI:
+```
+http://localhost:3000/api
+```
 
 ---
 
-## Other Useful Scripts
+## Security & Middleware
 
-```bash
-# Start in development mode only (hot reload):
-npm run start:dev
+- **CORS** enabled for secure integration with frontends
+- **JWT** authentication with custom payloads (using `sub` claim)
+- Automatic management of **correlation-id** and **transaction-id** for each request
+- **Rate limiting middleware** to prevent abuse
+- **Content-Type** validation for payload integrity
+- Centralized error handling via global exception filter
+- Global **request interceptor** (structured logging)
+- Modular architecture: **Repository, Service, Controller**
 
-# Start in production mode (needs build first):
-npm run build
-npm run start:prod
+---
 
-# Migrate database with development mode:
-npm run migrate:dev
+## Logging
 
-# Generate Prisma client:
-npx prisma generate
+Standardized and structured logs are generated — see example:  
+`docs/examples/example.log.json`
 
-# Run unit tests:
-npm run test
+---
 
-# Formatting code:
-npm run format
+## Request Flow
 
-# Lint code:
-npm run lint
-
-# End-to-end tests:
-npm run test:e2e
-```
+- All requests are processed by custom middlewares (rate limit, correlation-id, transaction-id, content-type).
+- Custom payloads and validation at the controller level.
+- Centralized error handling and logging/interception of IN/OUT requests.
 
 ---
 
@@ -87,17 +102,47 @@ npm run test:e2e
 
 - `src/` — Application source code
 - `prisma/` — Prisma models and migrations
-- `test/` — Unit and e2e test codes
-- `docs/` — Documentation assets
+- `test/` — Unit and end-to-end tests
+- `docs/` — Documentation and assets
+
+---
+
+## Useful Scripts
+
+```bash
+npm run format     # Format code
+npm run lint       # Lint project
+npm run test       # Unit tests
+npm run test:e2e   # End-to-end tests
+npm run start:dev  # Development mode with hot reload
+npm run build      # Build for production
+npm run start:prod # Run production build
+```
+
+---
+
+## Error Handling & Payloads
+
+- Custom payload validation at the controller level
+- Centralized error handling via global filter
+- Rate limit customizable via environment variables
+
+---
+
+## API Testing Collection
+
+Insomnia collection for API testing is available at:  
+`docs/refinamento/Banking Management API - Insomnia.yaml`
 
 ---
 
 ## Notes
 
-- No need for local database setup or Docker — all data is stored in an embedded SQLite file.
-- For custom configuration, always check and update your `.env` file.
-- CORS (Cross-Origin Resource Sharing) is enabled and configurable via environment variables for frontend integration.
+- You do **not** need to configure a local database or Docker. All data is stored in an embedded SQLite file.
+- CORS is enabled and can be configured via environment variables.
 - Swagger documentation is available at `/api` when running locally.
-- See internal documentation for details on endpoints and business rules.
+- All requests are tracked with correlationId, transactionId, and JWT sub claim.
+- See the provided logs for examples and troubleshooting.
+- See internal documentation and Swagger for full endpoints and business rules.
 
 ---
