@@ -11,22 +11,36 @@ datasource db {
 // USERS
 //
 model User {
-  id           String       @id @default(uuid()) @map("id_user")
-  name         String       @map("name")
-  email        String       @unique @map("email")
-  password     String       @map("password")
-  accessLevel  String       @map("access_level")
+  id           String    @id @default(uuid()) @map("id_user")
+  name         String    @map("name")
+  email        String    @unique @map("email")
+  password     String    @map("password")
 
-  roleId       String?      @map("role_id")
-  role         Role?        @relation(fields: [roleId], references: [id])
+  roleId       String    @map("role_id")  // <- Remove o "?" para tornar obrigatório
+  role         Role      @relation(fields: [roleId], references: [id], onDelete: Restrict) // <- Torna obrigatório e restrito
 
   accounts     UserAccount[]
   transactions Transaction[] @relation("OperatorTransactions")
 
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime     @updatedAt @map("updated_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
 
   @@map("user")
+}
+
+//
+// ACCOUNT TYPE
+//
+model AccountType {
+  id          String   @id @default(uuid()) @map("id_account_type")
+  name        String   @unique @map("name")
+  description String   @map("description")
+  accounts    Account[]
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("account_type")
 }
 
 //
@@ -35,6 +49,9 @@ model User {
 model Account {
   idAccount     String         @id @default(uuid()) @map("id_account")
   balance       Float          @default(0) @map("balance")
+  accountTypeId String         @map("account_type_id")
+  accountType   AccountType    @relation(fields: [accountTypeId], references: [id])
+  status        String         @default("ACTIVE") @map("status")               // <-- NOVO CAMPO
 
   users         UserAccount[]
   transactions  Transaction[]
@@ -44,7 +61,6 @@ model Account {
 
   @@map("account")
 }
-
 //
 // USER ↔ ACCOUNT (N:N)
 //
@@ -66,14 +82,16 @@ model UserAccount {
 // TRANSACTIONS
 //
 model Transaction {
-  idTransaction     String    @id @default(uuid()) @map("id_transaction")
-  accountId         String    @map("account_id")
-  type              String    @map("type")
-  amount            Float     @map("amount")
-  timestamp         DateTime  @default(now()) @map("timestamp")
-  balanceBefore     Float     @map("balance_before")
-  balanceAfter      Float     @map("balance_after")
-  operatorUserId    String?   @map("operator_user_id")
+  idTransaction        String    @id @default(uuid()) @map("id_transaction")
+  accountId            String    @map("account_id")
+  type                 String    @map("type")
+  amount               Float     @map("amount")
+  timestamp            DateTime  @default(now()) @map("timestamp")
+  balanceBefore        Float     @map("balance_before")
+  balanceAfter         Float     @map("balance_after")
+  operatorUserId       String?   @map("operator_user_id")
+  destinationAccountId String?   @map("destination_account_id") // <-- novo campo para conta de destino
+  sourceAccountId      String?   @map("source_account_id")      // <-- novo campo para conta origem (para registro TRANSFER_IN)
 
   account   Account @relation(fields: [accountId], references: [idAccount], onDelete: Cascade, onUpdate: Cascade)
   operator  User?   @relation("OperatorTransactions", fields: [operatorUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
@@ -87,14 +105,16 @@ model Transaction {
 //
 // ROLES
 //
+
 model Role {
-  id        String @id @default(uuid()) @map("id")
-  name      String @unique @map("name")
+  id          String   @id @default(uuid()) @map("id")
+  name        String   @unique @map("name")
+  description String   @map("description")
 
-  users     User[]
+  users       User[]   // permanece igual
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("role")
 }

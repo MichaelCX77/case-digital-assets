@@ -1,0 +1,134 @@
+routes:
+  users:
+    - path: /my-data
+      method: GET
+      roles: ["OWNER", "OPERATOR", "ADMIN"]
+      public: false
+    - path: /my-data
+      method: POST
+      roles: ["OWNER", "OPERATOR", "ADMIN"]
+      public: false
+    - path: /my-data
+      method: PUT
+      roles: ["OWNER", "OPERATOR", "ADMIN"]
+      public: false
+    - path: /users
+      method: POST
+      roles: []
+      public: true
+    - path: /users
+      method: GET
+      roles: ["OPERATOR", "ADMIN"]
+      public: false
+    - path: /users/:id
+      method: GET
+      roles: ["OPERATOR", "ADMIN"]
+      public: false
+    - path: /users/:id
+      method: PUT
+      roles: ["ADMIN"]
+      public: false
+    - path: /users/:id
+      method: DELETE
+      roles: ["ADMIN"]
+      public: false
+    - path: /users/:id/accounts
+      method: GET
+      roles: ["OWNER", "OPERATOR", "ADMIN"]
+      public: false
+    - path: /users/:id/accounts
+      method: POST
+      roles: ["OWNER", "OPERATOR", "ADMIN"]
+      public: false
+
+  accounts:
+    - path: /accounts
+      method: GET
+      roles: ["ADMIN", "OPERATOR"]
+      public: false
+    - path: /accounts
+      method: POST
+      roles: ["ADMIN", "OPERATOR"]
+      public: false
+    - path: /accounts/:id
+      method: GET
+      roles: ["ADMIN", "OPERATOR"]
+      public: false
+    - path: /accounts/:id/users
+      method: GET
+      roles: ["ADMIN", "OPERATOR"]
+      public: false
+    - path: /accounts/:id/users
+      method: POST
+      roles: ["ADMIN", "OPERATOR"]
+      public: false
+    - path: /accounts/:id
+      method: PUT
+      roles: ["ADMIN", "OPERATOR"]
+      public: false
+
+  transactions:
+    - path: /my-transactions
+      method: ALL
+      roles: ["OWNER", "OPERATOR"]
+      public: false
+    - path: /transactions/*
+      method: ALL
+      roles: ["OPERATOR", "ADMIN"]
+      public: false
+    - path: /accounts/:id/users/:userId
+      method: DELETE
+      roles: ["ADMIN"]
+      public: false
+    - path: /accounts/:accountId/transactions
+      method: GET
+      roles: ["OWNER", "OPERATOR", "ADMIN"]
+      public: false
+    - path: /accounts/:accountId/transactions
+      method: POST
+      roles: ["OWNER", "OPERATOR", "ADMIN"]
+      public: false
+
+  accountTypes:
+    - path: /account-types
+      method: GET
+      roles: ["ADMIN"]
+      public: false
+    - path: /account-types
+      method: POST
+      roles: ["ADMIN"]
+      public: false
+    - path: /account-types/:id
+      method: GET
+      roles: ["ADMIN"]
+      public: false
+    - path: /account-types/:id
+      method: PUT
+      roles: ["ADMIN"]
+      public: false
+    - path: /account-types/:id
+      method: DELETE
+      roles: ["ADMIN"]
+      public: false
+
+  roles:
+    - path: /roles
+      method: GET
+      roles: ["ADMIN"]
+      public: false
+    - path: /roles
+      method: POST
+      roles: ["ADMIN"]
+      public: false
+    - path: /roles/:id
+      method: GET
+      roles: ["ADMIN"]
+      public: false
+    - path: /roles/:id
+      method: PUT
+      roles: ["ADMIN"]
+      public: false
+    - path: /roles/:id
+      method: DELETE
+      roles: ["ADMIN"]
+      public: false
