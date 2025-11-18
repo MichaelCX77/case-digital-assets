@@ -23,7 +23,7 @@ import { TerminusModule } from '@nestjs/terminus';
 import { WinstonModule } from 'nest-winston';
 import { createWinstonLogger } from './common/logger/winston-logger';
 import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware';
-import { LoggingInterceptor } from './common/middleware/logging-interceptor';
+import { LoggingInterceptor } from './common/interceptors/logging-interceptor';
 import { TransactionIdMiddleware } from './common/middleware/transaction-id.meddleware'; // corrigido: 'meddleware' -> 'middleware'
 
 @Module({
