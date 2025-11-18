@@ -4,6 +4,9 @@ import { UserService } from './user.service';
 import { UserRepository } from './user.repository';
 import { PrismaModule } from '../prisma/prisma.module';
 
+/**
+ * Module for providing controllers, services, and repositories for user management.
+ */
 @Module({
   imports: [PrismaModule],
   controllers: [UserController],

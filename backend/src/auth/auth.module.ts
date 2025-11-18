@@ -8,6 +8,9 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 
+/**
+ * Module for authentication: handles JWT configuration, strategies, and controllers.
+ */
 @Module({
   imports: [
     PrismaModule,
@@ -15,11 +18,11 @@ import { JwtStrategy } from './jwt.strategy';
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (cfg: ConfigService) => {
-        const expiresIn = Number(cfg.get<string>('JWT_EXPIRES_IN')) || 3600; // <-- número de segundos
+        const expiresIn = Number(cfg.get<string>('JWT_EXPIRES_IN')) || 3600; // seconds
         return {
           secret: cfg.get<string>('JWT_SECRET') || 'dev-secret',
           signOptions: {
-            expiresIn, // agora é number
+            expiresIn, // now as number (seconds)
             issuer: cfg.get<string>('JWT_ISSUER') || 'my-api',
             audience: cfg.get<string>('JWT_AUDIENCE') || 'my-clients',
             algorithm: 'HS256',

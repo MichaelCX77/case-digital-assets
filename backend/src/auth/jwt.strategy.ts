@@ -3,6 +3,11 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 
+/**
+ * JwtStrategy provides JWT authentication mechanism for protected routes.
+ * It extracts and validates tokens from Authorization headers,
+ * and returns user information for use in request context.
+ */
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(cfg: ConfigService) {
@@ -13,6 +18,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
+  /**
+   * Validates token payload and injects it into request context.
+   * @param payload The JWT payload.
+   * @returns An object containing userId, email, and roles.
+   */
   async validate(payload: any) {
     return {
       userId: payload.sub,

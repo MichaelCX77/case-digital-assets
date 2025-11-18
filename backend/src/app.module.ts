@@ -12,7 +12,12 @@ import { ContentTypeMiddleware } from './common/middleware/content-type.middlewa
 import { AccountTypeModule } from './account-type/account-type.module';
 import { RoleModule } from './role/role.module';
 import { TransactionModule } from './transaction/transaction.module';
+import { TerminusModule } from '@nestjs/terminus';
 
+/**
+ * Main application module.
+ * Registers global config, core modules, controllers, guards, and middleware.
+ */
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -22,7 +27,8 @@ import { TransactionModule } from './transaction/transaction.module';
     AccountModule,
     AccountTypeModule,
     RoleModule,
-    TransactionModule
+    TransactionModule,
+    TerminusModule,
   ],
   controllers: [AppController],
   providers: [
@@ -34,6 +40,9 @@ import { TransactionModule } from './transaction/transaction.module';
   ],
 })
 export class AppModule implements NestModule {
+  /**
+   * Configure custom middleware (ContentTypeMiddleware for all routes).
+   */
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(ContentTypeMiddleware)
