@@ -70,7 +70,7 @@ routes:
   transactions:
     - path: /my-transactions
       method: ALL
-      roles: ["OWNER", "OPERATOR", "ADMIN"]
+      roles: ["OWNER", "OPERATOR"]
       public: false
     - path: /transactions/*
       method: ALL
@@ -79,6 +79,14 @@ routes:
     - path: /accounts/:id/users/:userId
       method: DELETE
       roles: ["ADMIN"]
+      public: false
+    - path: /accounts/:accountId/transactions
+      method: GET
+      roles: ["OWNER", "OPERATOR", "ADMIN"]
+      public: false
+    - path: /accounts/:accountId/transactions
+      method: POST
+      roles: ["OWNER", "OPERATOR", "ADMIN"]
       public: false
 
   accountTypes:

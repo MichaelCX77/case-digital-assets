@@ -9,6 +9,6 @@ import { UserModule } from 'src/user/user.module';
   imports: [PrismaModule, UserModule],
   controllers: [AccountController],
   providers: [AccountService, AccountRepository],
-  exports: [AccountService]
+  exports: [AccountService, AccountRepository] // <- AQUI! Precisa ter AccountRepository
 })
 export class AccountModule {}

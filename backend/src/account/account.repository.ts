@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class AccountRepository {
@@ -62,14 +63,10 @@ export class AccountRepository {
     });
   }
 
-  // Opcional: método para atualização de conta
-  async update(id: string, data: { accountTypeId?: string; status?: string }) {
+  async update(id: string, data: Prisma.AccountUpdateInput) {
     return this.prisma.account.update({
       where: { idAccount: id },
-      data: {
-        accountTypeId: data.accountTypeId,
-        status: data.status,
-      },
+      data,
       include: { accountType: true },
     });
   }

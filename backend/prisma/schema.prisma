@@ -82,14 +82,16 @@ model UserAccount {
 // TRANSACTIONS
 //
 model Transaction {
-  idTransaction     String    @id @default(uuid()) @map("id_transaction")
-  accountId         String    @map("account_id")
-  type              String    @map("type")
-  amount            Float     @map("amount")
-  timestamp         DateTime  @default(now()) @map("timestamp")
-  balanceBefore     Float     @map("balance_before")
-  balanceAfter      Float     @map("balance_after")
-  operatorUserId    String?   @map("operator_user_id")
+  idTransaction        String    @id @default(uuid()) @map("id_transaction")
+  accountId            String    @map("account_id")
+  type                 String    @map("type")
+  amount               Float     @map("amount")
+  timestamp            DateTime  @default(now()) @map("timestamp")
+  balanceBefore        Float     @map("balance_before")
+  balanceAfter         Float     @map("balance_after")
+  operatorUserId       String?   @map("operator_user_id")
+  destinationAccountId String?   @map("destination_account_id") // <-- novo campo para conta de destino
+  sourceAccountId      String?   @map("source_account_id")      // <-- novo campo para conta origem (para registro TRANSFER_IN)
 
   account   Account @relation(fields: [accountId], references: [idAccount], onDelete: Cascade, onUpdate: Cascade)
   operator  User?   @relation("OperatorTransactions", fields: [operatorUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)

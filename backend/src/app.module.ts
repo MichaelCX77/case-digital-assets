@@ -11,6 +11,7 @@ import { AccountModule } from './account/account.module';
 import { ContentTypeMiddleware } from './common/middleware/content-type.middleware';
 import { AccountTypeModule } from './account-type/account-type.module';
 import { RoleModule } from './role/role.module';
+import { TransactionModule } from './transaction/transaction.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { RoleModule } from './role/role.module';
     AccountModule,
     AccountTypeModule,
     RoleModule,
+    TransactionModule
   ],
   controllers: [AppController],
   providers: [
