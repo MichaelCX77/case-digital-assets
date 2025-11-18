@@ -1,3 +1,10 @@
+/**
+ * Main AppModule for the Banking Management API.
+ * - Registers global middleware in correct order for request metadata and validation.
+ * - Provides Winston structured logging and health check integration.
+ * - Sets global authorization guard and logging interceptor.
+ * - Modularizes user, account, role, transaction, and authentication features.
+ */
 import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
@@ -16,8 +23,8 @@ import { TerminusModule } from '@nestjs/terminus';
 import { WinstonModule } from 'nest-winston';
 import { createWinstonLogger } from './common/logger/winston-logger';
 import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware';
-import { LoggingInterceptor } from './common/middleware/logging-interceptor'; // ajuste: LoggingInterceptor é um Interceptor!
-import { TransactionIdMiddleware } from './common/middleware/transaction-id.meddleware';
+import { LoggingInterceptor } from './common/middleware/logging-interceptor';
+import { TransactionIdMiddleware } from './common/middleware/transaction-id.meddleware'; // corrigido: 'meddleware' -> 'middleware'
 
 @Module({
   imports: [
@@ -41,16 +48,18 @@ import { TransactionIdMiddleware } from './common/middleware/transaction-id.medd
     },
     {
       provide: APP_INTERCEPTOR,
-      useClass: LoggingInterceptor, // Logging agora como Interceptor global!
+      useClass: LoggingInterceptor,
     },
   ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
+    // Apply TransactionId middleware globally to ensure transactionId is set for all requests.
     consumer
       .apply(TransactionIdMiddleware)
       .forRoutes('*');
 
+    // Apply CorrelationId middleware, excluding public routes (token, health, root).
     consumer
       .apply(CorrelationIdMiddleware)
       .exclude(
@@ -60,6 +69,7 @@ export class AppModule implements NestModule {
       )
       .forRoutes('*');
 
+    // Always enforce content-type on mutating requests globally.
     consumer
       .apply(ContentTypeMiddleware)
       .forRoutes('*');

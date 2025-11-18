@@ -69,6 +69,7 @@ export class LoggingInterceptor implements NestInterceptor {
           type: 'OUT',
           message: parsedMessage,
           correlationId,
+          transactionId,
           method,
           url: originalUrl,
           timestamp: new Date().toISOString(),
