@@ -1,6 +1,7 @@
 /**
  * Entry point for Banking Management API.
  * - Sets up global exception filter and logger.
+ * - Enables CORS for cross-origin requests.
  * - Configures Swagger for API documentation.
  * - Applies global rate limiting middleware (configurable via environment variables).
  * - Uses Winston Logger for startup and operational logs.
@@ -13,12 +14,10 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { createWinstonLogger } from './common/logger/winston-logger';
 import rateLimit from 'express-rate-limit';
 
-// Rate limit configuration via environment variables
 const RATE_LIMIT_WINDOW_MS = Number(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000; // default: 15 minutes
 const RATE_LIMIT_MAX = Number(process.env.RATE_LIMIT_MAX) || 100; // default: 100 requests per window
 const RATE_LIMIT_MESSAGE = process.env.RATE_LIMIT_MESSAGE || 'Too many requests from this IP, please try again later.';
 
-// Global rate limit middleware
 const limiter = rateLimit({
   windowMs: RATE_LIMIT_WINDOW_MS,
   max: RATE_LIMIT_MAX,
@@ -28,6 +27,13 @@ const limiter = rateLimit({
 async function bootstrap() {
   // Create NestJS application with Winston logger (configured separately)
   const app = await NestFactory.create(AppModule);
+
+  // Enable CORS (cross-origin requests)
+  app.enableCors({
+    origin: process.env.CORS_ORIGIN?.split(',') || true, // Allow all if not set
+    methods: process.env.CORS_METHODS || 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+    credentials: process.env.CORS_CREDENTIALS === 'true',
+  });
 
   // Apply global rate limiting
   app.use(limiter);
@@ -48,7 +54,7 @@ async function bootstrap() {
   // Get the Winston logger
   const logger = app.get(WINSTON_MODULE_NEST_PROVIDER);
 
-  logger.log('Global HttpExceptionFilter and RateLimit middleware applied');
+  logger.log('Global HttpExceptionFilter, RateLimit middleware, and CORS applied');
 
   // Start the application and log startup info
   const port = process.env.PORT ?? 3000;
