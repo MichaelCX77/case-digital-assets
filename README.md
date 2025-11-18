@@ -1,84 +1,90 @@
-# Projeto Case Consignado — Backend
+# Case Consignado Project — Backend
 
-Este é o backend do projeto **Case Consignado** (`MichaelCX77/case-digital-assets`).  
-Abaixo estão as etapas para rodar o projeto localmente.
+This is the backend for the **Case Consignado** project (`MichaelCX77/case-digital-assets`).  
+Below are the steps to run the project locally.
 
-## Pré-requisitos
+## Solution_Diagram_AWS - Target Plateau
+
+![](docs/refinamento/assets/aws_soluction_diagram.png)
+
+
+
+## Prerequisites
 
 - [Node.js (v18+)](https://nodejs.org/)
 - [npm](https://www.npmjs.com/)
-- [Docker](https://www.docker.com/) (recomendado para banco de dados local)
-- [PostgreSQL](https://www.postgresql.org/) (caso prefira instalar sem Docker)
+- [Docker](https://www.docker.com/) (recommended for local database)
+- [PostgreSQL](https://www.postgresql.org/) (if you prefer manual installation instead of Docker)
 
-## Instalação
+## Installation
 
-1. **Clone o repositório:**
+1. **Clone the repository:**
    ```bash
    git clone https://github.com/MichaelCX77/case-digital-assets.git
    cd case-digital-assets/backend
    ```
 
-2. **Instale as dependências:**
+2. **Install dependencies:**
    ```bash
    npm install
    ```
 
-3. **Configure variáveis de ambiente:**
-   - Crie um arquivo `.env` na pasta `backend` baseado em `.env.example` (se existir):
+3. **Set up environment variables:**
+   - Create a `.env` file in the `backend` folder based on `.env.example` (if it exists):
      ```bash
      cp .env.example .env
      ```
-   - Preencha com os dados (principalmente da conexão com o banco).
+   - Fill in the required data (especially the database connection).
 
-4. **Configure o banco de dados:**
-   - Prefira rodar um PostgreSQL local (via Docker ou manual).
-   - Exemplo com Docker:
+4. **Set up the database:**
+   - Preferably, run a local PostgreSQL instance (using Docker or manually).
+   - Example with Docker:
      ```bash
-     docker run --name case_postgres -e POSTGRES_PASSWORD=senha -e POSTGRES_USER=usuario -e POSTGRES_DB=case_db -p 5432:5432 -d postgres
+     docker run --name case_postgres -e POSTGRES_PASSWORD=yourpassword -e POSTGRES_USER=youruser -e POSTGRES_DB=case_db -p 5432:5432 -d postgres
      ```
-   - Ajuste a `DATABASE_URL` no `.env`:
+   - Set the `DATABASE_URL` value in your `.env` file:
      ```
-     DATABASE_URL="postgresql://usuario:senha@localhost:5432/case_db"
+     DATABASE_URL="postgresql://youruser:yourpassword@localhost:5432/case_db"
      ```
 
-5. **Migrate e gere o schema do Prisma:**
+5. **Run migrations and generate Prisma schema:**
    ```bash
    npm run migrate:dev
    npx prisma generate
    ```
 
-## Rodando o Projeto
+## Running the Project
 
 ```bash
-# Desenvolvimento com hot reload:
+# Development with hot reload:
 npm run start:dev
 
-# Produção:
+# Production:
 npm run build
 npm run start:prod
 
-# Rodar testes:
+# Run tests:
 npm run test
 ```
 
-## Scripts úteis
+## Useful Scripts
 
-- **Formatar código:** `npm run format`
+- **Code formatting:** `npm run format`
 - **Lint:** `npm run lint`
-- **Testes unitários:** `npm run test`
-- **Testes E2E:** `npm run test:e2e`
+- **Unit tests:** `npm run test`
+- **E2E tests:** `npm run test:e2e`
 
-## Estrutura
+## Structure
 
-- `src/` — Código principal
-- `prisma/` — Schema do banco e migrations
-- `test/` — Testes unitários e e2e
+- `src/` — Main code
+- `prisma/` — Database schema and migrations
+- `test/` — Unit and e2e tests
 
-## Observações
+## Notes
 
-- Certifique-se que o banco esteja rodando antes de iniciar o backend.
-- Para mais detalhes e endpoints, consulte a documentação interna do projeto.
+- Make sure the database is running before starting the backend.
+- For more details and endpoints, consult the internal project documentation.
 
 ---
 
-> Projeto desenvolvido para o Case Consignado
+> Project developed for Case Consignado
