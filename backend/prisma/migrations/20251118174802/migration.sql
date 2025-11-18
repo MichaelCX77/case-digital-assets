@@ -52,6 +52,8 @@ CREATE TABLE "transaction" (
     "balance_before" REAL NOT NULL,
     "balance_after" REAL NOT NULL,
     "operator_user_id" TEXT,
+    "destination_account_id" TEXT,
+    "source_account_id" TEXT,
     "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" DATETIME NOT NULL,
     CONSTRAINT "transaction_account_id_fkey" FOREIGN KEY ("account_id") REFERENCES "account" ("id_account") ON DELETE CASCADE ON UPDATE CASCADE,

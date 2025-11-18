@@ -3,8 +3,8 @@ import { Request } from 'express';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 import * as path from 'path';
-import { verifyToken } from '../auth/jwt.util';
-import { UserService } from '../user/user.service';
+import { verifyToken } from '../../modules/auth/jwt.util';
+import { UserService } from '../../modules/user/user.service';
 
 /**
  * Guard for API Gateway authorization, handling role-based and public route access.

@@ -6,6 +6,27 @@ meta:
   modified: 1763413394579
   description: ""
 collection:
+  - url: "{{ _.base_url }}/health"
+    name: Health Check
+    meta:
+      id: req_67ba4fe9626048f492ffe5ce536b0782
+      created: 1763463465280
+      modified: 1763463486256
+      isPrivate: false
+      description: ""
+      sortKey: -1763463465280
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.0.0
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
   - name: Users
     meta:
       id: fld_3de1b9932f98472a998bb469f7022a2e
@@ -660,7 +681,7 @@ collection:
         meta:
           id: req_a12769366d914239aa81ffcc701d7446
           created: 1763421349484
-          modified: 1763421920795
+          modified: 1763468056485
           isPrivate: false
           description: ""
           sortKey: -1763421262936
@@ -802,7 +823,7 @@ collection:
     meta:
       id: fld_5f66892cdd384f6a88f6bf5d0c995d3e
       created: 1763427040556
-      modified: 1763429992040
+      modified: 1763463724246
       sortKey: -1763364686336.625
       description: ""
     children:

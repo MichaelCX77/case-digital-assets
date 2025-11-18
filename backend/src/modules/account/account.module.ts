@@ -3,7 +3,7 @@ import { AccountController } from './account.controller';
 import { AccountService } from './account.service';
 import { AccountRepository } from './account.repository';
 import { PrismaModule } from '../prisma/prisma.module';
-import { UserModule } from 'src/user/user.module';
+import { UserModule } from '../user/user.module';
 
 /**
  * NestJS module that provides account domain features,
