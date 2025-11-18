@@ -1,6 +1,6 @@
-# Case Consignado Project — Backend
+# Case Digital Assets Project — FullStack
 
-This is the backend for the **Case Consignado** project (`MichaelCX77/case-digital-assets`).  
+This is the backend for the **Case Digital Assets** project (`MichaelCX77/case-digital-assets`).  
 Below are the steps to run the project locally.
 
 ## Solution_Diagram_AWS - Target Plateau
@@ -86,5 +86,3 @@ npm run test
 - For more details and endpoints, consult the internal project documentation.
 
 ---
-
-> Project developed for Case Consignado
