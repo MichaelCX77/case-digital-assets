@@ -18,11 +18,11 @@ routes:
       public: true
     - path: /users
       method: GET
-      roles: ["OPERATOR","ADMIN"]
+      roles: ["OPERATOR", "ADMIN"]
       public: false
     - path: /users/:id
       method: GET
-      roles: ["OPERATOR","ADMIN"]
+      roles: ["OPERATOR", "ADMIN"]
       public: false
     - path: /users/:id
       method: PUT
@@ -81,7 +81,6 @@ routes:
       roles: ["ADMIN"]
       public: false
 
-
   accountTypes:
     - path: /account-types
       method: GET
@@ -100,6 +99,28 @@ routes:
       roles: ["ADMIN"]
       public: false
     - path: /account-types/:id
+      method: DELETE
+      roles: ["ADMIN"]
+      public: false
+
+  roles:
+    - path: /roles
+      method: GET
+      roles: ["ADMIN"]
+      public: false
+    - path: /roles
+      method: POST
+      roles: ["ADMIN"]
+      public: false
+    - path: /roles/:id
+      method: GET
+      roles: ["ADMIN"]
+      public: false
+    - path: /roles/:id
+      method: PUT
+      roles: ["ADMIN"]
+      public: false
+    - path: /roles/:id
       method: DELETE
       roles: ["ADMIN"]
       public: false

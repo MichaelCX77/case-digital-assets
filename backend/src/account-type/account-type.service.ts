@@ -14,11 +14,38 @@ export class AccountTypeService {
     return types.map(t => new AccountTypeResponseDto(t));
   }
 
+  private normalizeAndValidateName(name?: string): string | undefined {
+    if (!name) return undefined;
+    const normalized = name.toUpperCase();
+    if (normalized.includes(' ')) {
+      throw new BadRequestException('Account type name must not contain spaces');
+    }
+    return normalized;
+  }
+
+  private isNameUniqueError(err: any) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+      if (Array.isArray(err.meta?.target)) {
+        return err.meta?.target.includes('name');
+      }
+      return err.meta?.target === 'name';
+    }
+    return false;
+  }
+
   async createAccountType(data: CreateAccountTypeDto): Promise<AccountTypeResponseDto> {
     if (!data.name) throw new BadRequestException('Account type name required');
     if (!data.description) throw new BadRequestException('Account type description required');
-    const type = await this.repo.create(data);
-    return new AccountTypeResponseDto(type);
+    const name = this.normalizeAndValidateName(data.name)!;
+    try {
+      const type = await this.repo.create({ name, description: data.description });
+      return new AccountTypeResponseDto(type);
+    } catch (err) {
+      if (this.isNameUniqueError(err)) {
+        throw new ConflictException(`Account type name "${name}" already exists.`);
+      }
+      throw err;
+    }
   }
 
   async getAccountType(id: string): Promise<AccountTypeResponseDto> {
@@ -30,12 +57,25 @@ export class AccountTypeService {
   async updateAccountType(id: string, data: UpdateAccountTypeDto): Promise<AccountTypeResponseDto> {
     const type = await this.repo.findById(id);
     if (!type) throw new NotFoundException('AccountType not found');
-    // Ao editar, pode querer validar se nome ou descrição não vazios (opcional)
-    if (!data.name && !data.description) {
+    let name: string | undefined;
+    if (data.name !== undefined) {
+      name = this.normalizeAndValidateName(data.name);
+    }
+    if (!name && !data.description) {
       throw new BadRequestException('At least one field (name or description) must be provided for update');
     }
-    const updated = await this.repo.update(id, data);
-    return new AccountTypeResponseDto(updated);
+    try {
+      const updated = await this.repo.update(id, {
+        ...(name ? { name } : {}),
+        ...(data.description ? { description: data.description } : {}),
+      });
+      return new AccountTypeResponseDto(updated);
+    } catch (err) {
+      if (this.isNameUniqueError(err)) {
+        throw new ConflictException(`Account type name "${data.name?.toUpperCase()}" already exists.`);
+      }
+      throw err;
+    }
   }
 
   async deleteAccountType(id: string): Promise<void> {
