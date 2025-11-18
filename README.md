@@ -1,22 +1,22 @@
 # Case Digital Assets Project — FullStack
 
 This is the backend for the **Case Digital Assets** project (`MichaelCX77/case-digital-assets`).  
-Below are the steps to run the project locally.
+Below are the steps to run the project locally with a single command.
 
-## Solution_Diagram_AWS - Target Plateau
+## Solution_Diagram_AWS — Target Plateau
 
 ![](docs/refinamento/assets/aws_soluction_diagram.png)
 
-
+---
 
 ## Prerequisites
 
 - [Node.js (v18+)](https://nodejs.org/)
 - [npm](https://www.npmjs.com/)
-- [Docker](https://www.docker.com/) (recommended for local database)
-- [PostgreSQL](https://www.postgresql.org/) (if you prefer manual installation instead of Docker)
 
-## Installation
+---
+
+## Installation & Setup
 
 1. **Clone the repository:**
    ```bash
@@ -24,65 +24,80 @@ Below are the steps to run the project locally.
    cd case-digital-assets/backend
    ```
 
-2. **Install dependencies:**
-   ```bash
-   npm install
+2. **Create or edit your environment file:**
+   > Make sure you have a `.env` in the `backend` folder with the required settings (database URL, secrets, etc).
+   > For development, SQLite is used by default — no further database or Docker setup needed!
+
+   Example (`.env`):
+   ```
+   DATABASE_URL="file:./dev.db"
    ```
 
-3. **Set up environment variables:**
-   - Create a `.env` file in the `backend` folder based on `.env.example` (if it exists):
-     ```bash
-     cp .env.example .env
-     ```
-   - Fill in the required data (especially the database connection).
+---
 
-4. **Set up the database:**
-   - Preferably, run a local PostgreSQL instance (using Docker or manually).
-   - Example with Docker:
-     ```bash
-     docker run --name case_postgres -e POSTGRES_PASSWORD=yourpassword -e POSTGRES_USER=youruser -e POSTGRES_DB=case_db -p 5432:5432 -d postgres
-     ```
-   - Set the `DATABASE_URL` value in your `.env` file:
-     ```
-     DATABASE_URL="postgresql://youruser:yourpassword@localhost:5432/case_db"
-     ```
+## Running Locally (One Command)
 
-5. **Run migrations and generate Prisma schema:**
-   ```bash
-   npm run migrate:dev
-   npx prisma generate
-   ```
-
-## Running the Project
+Just run:
 
 ```bash
-# Development with hot reload:
+npm run setup
+```
+
+This script will:
+
+- Install all dependencies (`npm install`)
+- Apply database migrations (`npm run migrate:deploy`)
+- Start the backend in **development mode with hot reload** (`npm run start:dev`)
+- Prisma will use the default local SQLite file (`dev.db`) for data storage.
+
+---
+
+## Other Useful Scripts
+
+```bash
+# Start in development mode only (hot reload):
 npm run start:dev
 
-# Production:
+# Start in production mode (needs build first):
 npm run build
 npm run start:prod
 
-# Run tests:
+# Migrate database with development mode:
+npm run migrate:dev
+
+# Generate Prisma client:
+npx prisma generate
+
+# Run unit tests:
 npm run test
+
+# Formatting code:
+npm run format
+
+# Lint code:
+npm run lint
+
+# End-to-end tests:
+npm run test:e2e
 ```
 
-## Useful Scripts
+---
 
-- **Code formatting:** `npm run format`
-- **Lint:** `npm run lint`
-- **Unit tests:** `npm run test`
-- **E2E tests:** `npm run test:e2e`
+## Project Structure
 
-## Structure
+- `src/` — Application source code
+- `prisma/` — Prisma models and migrations
+- `test/` — Unit and e2e test codes
+- `docs/` — Documentation assets
 
-- `src/` — Main code
-- `prisma/` — Database schema and migrations
-- `test/` — Unit and e2e tests
+---
 
 ## Notes
 
-- Make sure the database is running before starting the backend.
-- For more details and endpoints, consult the internal project documentation.
+- No need for local database setup or Docker — all data is stored in an embedded SQLite file.
+- For custom configuration, always check and update your `.env` file.
+- CORS (Cross-Origin Resource Sharing) is enabled and configurable via environment variables for frontend integration.
+- Swagger documentation is available at `/api` when running locally.
+- See internal documentation for details on endpoints and business rules.
 
 ---

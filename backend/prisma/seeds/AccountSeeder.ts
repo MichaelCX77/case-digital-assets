@@ -1,7 +1,20 @@
 import { PrismaClient, Account } from '@prisma/client';
 import { ISeeder } from './core/ISeeder';
 
+/**
+ * Seeder for populating the Account table.
+ * Requires AccountTypes and Users in the context for correct seeding.
+ */
 export class AccountSeeder implements ISeeder {
+  /**
+   * Seeds accounts for each user using available account types.
+   * Each user is assigned an account with a default balance and ACTIVE status.
+   * Also creates userAccount link for each association.
+   * Adds the created accounts array to the context.
+   * @param prisma PrismaClient instance for database operations.
+   * @param context Object containing seeded AccountTypes and Users, will receive seeded Accounts.
+   * @throws Error if account types are missing in context.
+   */
   async run(prisma: PrismaClient, context: any) {
     const accounts: Account[] = [];
     const accountTypes = context.accountTypes;
@@ -15,7 +28,7 @@ export class AccountSeeder implements ISeeder {
         data: {
           balance: 10,
           accountTypeId: accountType.id,
-          status: "ACTIVE", // <-- novo campo obrigatório
+          status: "ACTIVE", // required field
         },
       });
 
