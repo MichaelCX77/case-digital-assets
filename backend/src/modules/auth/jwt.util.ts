@@ -8,13 +8,13 @@ const SECRET = process.env.JWT_SECRET || 'super-secret';
 const EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h';
 
 /**
- * Generates a JWT token with email and roles in the payload.
- * @param email The user's email to include in the token payload.
+ * Generates a JWT token with user_id and roles in the payload.
+ * @param userId The user's id to include in the token payload.
  * @param roles Array of user roles to include in the token payload.
  * @returns A signed JWT token string.
  */
-export function generateToken(email: string, roles: string[]): string {
-  const payload = { email, roles };
+export function generateToken(userId: string, roles: string[]): string {
+  const payload = { sub: userId, roles };
   const signOptions: jwt.SignOptions = {
     expiresIn: EXPIRES_IN as jwt.SignOptions['expiresIn'],
   };
@@ -30,7 +30,7 @@ export function generateToken(email: string, roles: string[]): string {
 export function verifyToken(token: string): any {
   try {
     return jwt.verify(token, SECRET);
-  } catch (err) {
+  } catch (err) { 
     throw err;
   }
 }

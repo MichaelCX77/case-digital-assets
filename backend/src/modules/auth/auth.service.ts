@@ -37,7 +37,7 @@ export class AuthService {
     // Set roles in the token payload
     const roles = user.role ? [user.role.name] : [];
 
-    const access_token = generateToken(user.email, roles);
+    const access_token = generateToken(user.id, roles);
 
     return { access_token };
   }

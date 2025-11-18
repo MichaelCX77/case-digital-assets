@@ -1,4 +1,4 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
@@ -13,11 +13,11 @@ import { AccountTypeModule } from './modules/account-type/account-type.module';
 import { RoleModule } from './modules/role/role.module';
 import { TransactionModule } from './modules/transaction/transaction.module';
 import { TerminusModule } from '@nestjs/terminus';
+import { WinstonModule } from 'nest-winston';
+import { createWinstonLogger } from './common/logger/winston-logger';
+import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware';
+import { LoggingMiddleware } from './common/middleware/logging-middleware';
 
-/**
- * Main application module.
- * Registers global config, core modules, controllers, guards, and middleware.
- */
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -29,6 +29,7 @@ import { TerminusModule } from '@nestjs/terminus';
     RoleModule,
     TransactionModule,
     TerminusModule,
+    WinstonModule.forRoot(createWinstonLogger()),
   ],
   controllers: [AppController],
   providers: [
@@ -40,10 +41,24 @@ import { TerminusModule } from '@nestjs/terminus';
   ],
 })
 export class AppModule implements NestModule {
-  /**
-   * Configure custom middleware (ContentTypeMiddleware for all routes).
-   */
   configure(consumer: MiddlewareConsumer) {
+
+    // 1️⃣ CorrelationIdMiddleware — precisa excluir as rotas públicas
+    consumer
+      .apply(CorrelationIdMiddleware)
+      .exclude(
+        { path: 'auth/token', method: RequestMethod.ALL },
+        { path: 'health', method: RequestMethod.ALL },
+        { path: '', method: RequestMethod.ALL },
+      )
+      .forRoutes('*');
+
+    // 2️⃣ Logging — agora sempre vai pegar o correlation correto
+    consumer
+      .apply(LoggingMiddleware)
+      .forRoutes('*');
+
+    // 3️⃣ Content-type — por último
     consumer
       .apply(ContentTypeMiddleware)
       .forRoutes('*');

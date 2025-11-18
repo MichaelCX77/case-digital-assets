@@ -112,4 +112,9 @@ export class UserService {
     const roleName = await this.repo.findRoleNameByEmail(email);
     return roleName ? [roleName] : [];
   }
+
+  async getRoleNamesById(id: string): Promise<string[]> {
+    const user = await this.repo.findById(id);
+    return user?.role ? [user.role.name] : [];
+  }
 }

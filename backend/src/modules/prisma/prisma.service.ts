@@ -14,6 +14,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     await this.$connect();
   }
 
+  
   /**
    * Closes the Prisma Client connection when the module is destroyed.
    * Logs a message to indicate successful disconnection.

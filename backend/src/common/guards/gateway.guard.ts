@@ -20,7 +20,7 @@ export class GatewayGuard implements CanActivate {
   /**
    * List of local routes that do not require authentication.
    */
-  private localRoutes = ['/auth/token', '/health', '/', '/health'];
+  private publicRoutes = ['/auth/token', '/health', '/'];
 
   constructor(private userService: UserService) {}
 
@@ -113,7 +113,7 @@ export class GatewayGuard implements CanActivate {
 
     const req: Request = context.switchToHttp().getRequest();
 
-    if (this.localRoutes.includes(req.path)) {
+    if (this.publicRoutes.includes(req.path)) {
       return true;
     }
 
@@ -139,7 +139,11 @@ export class GatewayGuard implements CanActivate {
       throw new UnauthorizedException('Invalid token');
     }
 
-    const userRoles = await this.userService.getRoleNames(payload.email);
+    // Ajuste: use o campo 'sub' do payload JWT como userId
+    const userId = payload.sub;
+
+    // Novo método no UserService: getRoleNamesById
+    const userRoles = await this.userService.getRoleNamesById(userId);
 
     if (!userRoles || userRoles.length === 0) {
       throw new ForbiddenException('User not found or has no permission');
