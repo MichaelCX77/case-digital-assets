@@ -1,0 +1,18 @@
+"correlationId": "fd66ff6c-1297-472e-b418-6f162b74980d",
+"level": "info",
+"method": "GET",
+"timestamp": "2025-11-18T20:20:55.878Z",
+"type": "IN",
+"url": "/accounts"
+}
+{
+"correlationId": "fd66ff6c-1297-472e-b418-6f162b74980d",
+"elapsed": 3,
+"level": "info",
+"message": "\nInvalid `this.prisma.user.findUnique()` invocation in\nC:\\Users\\mayco\\projects\\case-digital-assets\\case_itau_nodejs\\backend\\src\\modules\\user\\user.repository.ts:37:29\n\n  34  * @param email - User email.\n  35  */\n  36 async findByEmail(email: string) {\n→ 37   return this.prisma.user.findUnique({\n         where: {\n           email: undefined,\n       ?   id?: String,\n       ?   AND?: UserWhereInput | UserWhereInput[],\n       ?   OR?: UserWhereInput[],\n       ?   NOT?: UserWhereInput | UserWhereInput[],\n       ?   name?: StringFilter | String,\n       ?   password?: StringFilter | String,\n       ?   roleId?: StringFilter | String,\n       ?   createdAt?: DateTimeFilter | DateTime,\n       ?   updatedAt?: DateTimeFilter | DateTime,\n       ?   role?: RoleScalarRelationFilter | RoleWhereInput,\n       ?   accounts?: UserAccountListRelationFilter,\n       ?   transactions?: TransactionListRelationFilter\n         },\n         include: {\n           role: true\n         }\n       })\n\nArgument `where` of type UserWhereUniqueInput needs at least one of `id` or `email` arguments. Available options are marked with ?.",
+"method": "GET",
+"statusCode": 500,
+"timestamp": "2025-11-18T20:20:55.881Z",
+"type": "OUT",
+"url": "/accounts"
+}
