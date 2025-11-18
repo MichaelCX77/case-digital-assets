@@ -6,10 +6,6 @@ import { TransactionResponseDto } from './dto/transaction-response.dto';
 
 /**
  * Controller for handling transaction-related endpoints.
- * 
- * Routes:
- * - GET /accounts/:accountId/transactions — Lists all transactions for the account.
- * - POST /accounts/:accountId/transactions — Creates a transfer transaction for the account.
  */
 @ApiTags('Transactions')
 @ApiBearerAuth()
