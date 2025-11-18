@@ -4,7 +4,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { GatewayGuard } from './common/guards/gateway.guard';
 import { UserModule } from './modules/user/user.module';
 import { AccountModule } from './modules/account/account.module';
@@ -16,7 +16,8 @@ import { TerminusModule } from '@nestjs/terminus';
 import { WinstonModule } from 'nest-winston';
 import { createWinstonLogger } from './common/logger/winston-logger';
 import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware';
-import { LoggingMiddleware } from './common/middleware/logging-middleware';
+import { LoggingInterceptor } from './common/middleware/logging-interceptor'; // ajuste: LoggingInterceptor é um Interceptor!
+import { TransactionIdMiddleware } from './common/middleware/transaction-id.meddleware';
 
 @Module({
   imports: [
@@ -38,12 +39,18 @@ import { LoggingMiddleware } from './common/middleware/logging-middleware';
       provide: APP_GUARD,
       useClass: GatewayGuard,
     },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor, // Logging agora como Interceptor global!
+    },
   ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(TransactionIdMiddleware)
+      .forRoutes('*');
 
-    // 1️⃣ CorrelationIdMiddleware — precisa excluir as rotas públicas
     consumer
       .apply(CorrelationIdMiddleware)
       .exclude(
@@ -53,12 +60,6 @@ export class AppModule implements NestModule {
       )
       .forRoutes('*');
 
-    // 2️⃣ Logging — agora sempre vai pegar o correlation correto
-    consumer
-      .apply(LoggingMiddleware)
-      .forRoutes('*');
-
-    // 3️⃣ Content-type — por último
     consumer
       .apply(ContentTypeMiddleware)
       .forRoutes('*');

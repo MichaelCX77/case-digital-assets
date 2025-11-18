@@ -24,10 +24,6 @@ export class GatewayGuard implements CanActivate {
 
   constructor(private userService: UserService) {}
 
-  /**
-   * Loads and parses routes from YAML file when the file is modified.
-   * Updates internal routes cache.
-   */
   private loadYaml() {
     const fullPath = path.join(process.cwd(), 'src/config/routes.yml');
     const stats = fs.statSync(fullPath);
@@ -52,13 +48,6 @@ export class GatewayGuard implements CanActivate {
     }
   }
 
-  /**
-   * Matches an incoming request path and HTTP method to a configured route.
-   * Supports :param segments and /* wildcards.
-   * @param reqPath Incoming request path.
-   * @param reqMethod Incoming HTTP method.
-   * @returns Matched route object or undefined.
-   */
   private matchRoute(reqPath: string, reqMethod: string) {
     const cleanReqPath = reqPath.replace(/\/+$/, '');
 
@@ -101,13 +90,6 @@ export class GatewayGuard implements CanActivate {
     });
   }
 
-  /**
-   * Main canActivate method used by NestJS to authorize each request.
-   * Checks route match, authentication, and user role permissions as needed.
-   * Throws standard HTTP exceptions for errors.
-   * @param context Execution context provided by NestJS.
-   * @returns True if request is authorized, otherwise throws an exception.
-   */
   async canActivate(context: ExecutionContext): Promise<boolean> {
     this.loadYaml();
 
@@ -139,10 +121,9 @@ export class GatewayGuard implements CanActivate {
       throw new UnauthorizedException('Invalid token');
     }
 
-    // Ajuste: use o campo 'sub' do payload JWT como userId
     const userId = payload.sub;
 
-    // Novo método no UserService: getRoleNamesById
+    // Roles (do banco) — nota: se você quiser usar só do token, troque abaixo!
     const userRoles = await this.userService.getRoleNamesById(userId);
 
     if (!userRoles || userRoles.length === 0) {
@@ -153,6 +134,12 @@ export class GatewayGuard implements CanActivate {
     if (!hasRole) {
       throw new ForbiddenException('Access denied');
     }
+
+    // 💡 CRUCIAL! Salva infos do usuário para o restante do ciclo HTTP
+    req.user = {
+      userId,     // ID do usuário autenticado (mesmo que sub do token)
+      roles: userRoles, // roles!
+    };
 
     return true;
   }

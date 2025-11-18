@@ -1,18 +1,75 @@
-"correlationId": "fd66ff6c-1297-472e-b418-6f162b74980d",
-"level": "info",
-"method": "GET",
-"timestamp": "2025-11-18T20:20:55.878Z",
-"type": "IN",
-"url": "/accounts"
-}
-{
-"correlationId": "fd66ff6c-1297-472e-b418-6f162b74980d",
-"elapsed": 3,
-"level": "info",
-"message": "\nInvalid `this.prisma.user.findUnique()` invocation in\nC:\\Users\\mayco\\projects\\case-digital-assets\\case_itau_nodejs\\backend\\src\\modules\\user\\user.repository.ts:37:29\n\n  34  * @param email - User email.\n  35  */\n  36 async findByEmail(email: string) {\n→ 37   return this.prisma.user.findUnique({\n         where: {\n           email: undefined,\n       ?   id?: String,\n       ?   AND?: UserWhereInput | UserWhereInput[],\n       ?   OR?: UserWhereInput[],\n       ?   NOT?: UserWhereInput | UserWhereInput[],\n       ?   name?: StringFilter | String,\n       ?   password?: StringFilter | String,\n       ?   roleId?: StringFilter | String,\n       ?   createdAt?: DateTimeFilter | DateTime,\n       ?   updatedAt?: DateTimeFilter | DateTime,\n       ?   role?: RoleScalarRelationFilter | RoleWhereInput,\n       ?   accounts?: UserAccountListRelationFilter,\n       ?   transactions?: TransactionListRelationFilter\n         },\n         include: {\n           role: true\n         }\n       })\n\nArgument `where` of type UserWhereUniqueInput needs at least one of `id` or `email` arguments. Available options are marked with ?.",
-"method": "GET",
-"statusCode": 500,
-"timestamp": "2025-11-18T20:20:55.881Z",
-"type": "OUT",
-"url": "/accounts"
-}
+[
+    {
+        "level": "info",
+        "message": "Application started on port 3000",
+        "timestamp": "2025-11-18T21:17:43.304Z"
+    },
+    {
+        "level": "info",
+        "message": "Swagger available at /api",
+        "timestamp": "2025-11-18T21:17:43.305Z"
+    },
+    {
+        "correlationId": "0ede33df-035a-4506-a9d8-1c728e32c332",
+        "level": "info",
+        "method": "GET",
+        "timestamp": "2025-11-18T21:17:46.604Z",
+        "transactionId": "6257576c-759f-462d-8b06-fbcb0f9dadca",
+        "type": "IN",
+        "url": "/roles",
+        "userId": "e36960c4-539e-45c4-b848-521074f955bc"
+    },
+    {
+        "correlationId": "0ede33df-035a-4506-a9d8-1c728e32c332",
+        "elapsed": 3,
+        "level": "info",
+        "method": "GET",
+        "statusCode": 200,
+        "timestamp": "2025-11-18T21:17:46.607Z",
+        "type": "OUT",
+        "url": "/roles",
+        "userId": "e36960c4-539e-45c4-b848-521074f955bc"
+    },
+    {
+        "correlationId": "0ede33df-035a-4506-a9d8-1c728e32c332",
+        "level": "info",
+        "method": "GET",
+        "timestamp": "2025-11-18T21:17:47.293Z",
+        "transactionId": "04879be9-3a07-4a9c-9783-212f623a93cb",
+        "type": "IN",
+        "url": "/roles",
+        "userId": "e36960c4-539e-45c4-b848-521074f955bc"
+    },
+    {
+        "correlationId": "0ede33df-035a-4506-a9d8-1c728e32c332",
+        "elapsed": 1,
+        "level": "info",
+        "method": "GET",
+        "statusCode": 200,
+        "timestamp": "2025-11-18T21:17:47.294Z",
+        "type": "OUT",
+        "url": "/roles",
+        "userId": "e36960c4-539e-45c4-b848-521074f955bc"
+    },
+    {
+        "correlationId": "0ede33df-035a-4506-a9d8-1c728e32c332",
+        "level": "info",
+        "method": "GET",
+        "timestamp": "2025-11-18T21:18:53.854Z",
+        "transactionId": "029c17e4-53f8-4d1c-bd1c-9e0957d9a810",
+        "type": "IN",
+        "url": "/roles",
+        "userId": "e36960c4-539e-45c4-b848-521074f955bc"
+    },
+    {
+        "correlationId": "0ede33df-035a-4506-a9d8-1c728e32c332",
+        "elapsed": 1,
+        "level": "info",
+        "method": "GET",
+        "statusCode": 200,
+        "timestamp": "2025-11-18T21:18:53.855Z",
+        "type": "OUT",
+        "url": "/roles",
+        "userId": "e36960c4-539e-45c4-b848-521074f955bc"
+    }
+]
