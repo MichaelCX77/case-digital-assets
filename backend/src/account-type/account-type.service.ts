@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
 import { AccountTypeRepository } from './account-type.repository';
 import { CreateAccountTypeDto } from './dto/create-account-type.dto';
+import { UpdateAccountTypeDto } from './dto/update-account-type.dto';
 import { AccountTypeResponseDto } from './dto/account-type-response.dto';
 import { Prisma } from '@prisma/client';
 
@@ -24,6 +25,17 @@ export class AccountTypeService {
     const type = await this.repo.findById(id);
     if (!type) throw new NotFoundException('AccountType not found');
     return new AccountTypeResponseDto(type);
+  }
+
+  async updateAccountType(id: string, data: UpdateAccountTypeDto): Promise<AccountTypeResponseDto> {
+    const type = await this.repo.findById(id);
+    if (!type) throw new NotFoundException('AccountType not found');
+    // Ao editar, pode querer validar se nome ou descrição não vazios (opcional)
+    if (!data.name && !data.description) {
+      throw new BadRequestException('At least one field (name or description) must be provided for update');
+    }
+    const updated = await this.repo.update(id, data);
+    return new AccountTypeResponseDto(updated);
   }
 
   async deleteAccountType(id: string): Promise<void> {

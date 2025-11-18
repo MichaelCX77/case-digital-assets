@@ -96,6 +96,10 @@ routes:
       roles: ["ADMIN"]
       public: false
     - path: /account-types/:id
+      method: PUT
+      roles: ["ADMIN"]
+      public: false
+    - path: /account-types/:id
       method: DELETE
       roles: ["ADMIN"]
       public: false

@@ -1,27 +1,32 @@
-import { Controller, Get, Post, Delete, Param, Body, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, HttpCode } from '@nestjs/common';
 import { AccountTypeService } from './account-type.service';
 import { CreateAccountTypeDto } from './dto/create-account-type.dto';
+import { UpdateAccountTypeDto } from './dto/update-account-type.dto';
 
 @Controller('account-types')
 export class AccountTypeController {
   constructor(private readonly service: AccountTypeService) {}
 
   @Get()
-  @HttpCode(200)
-  async findAll() {
+  async list() {
     return this.service.listAccountTypes();
+  }
+
+  @Get(':id')
+  async getOne(@Param('id') id: string) {
+    return this.service.getAccountType(id);
   }
 
   @Post()
   @HttpCode(201)
-  async create(@Body() body: CreateAccountTypeDto) {
-    return this.service.createAccountType(body);
+  async create(@Body() dto: CreateAccountTypeDto) {
+    return this.service.createAccountType(dto);
   }
 
-  @Get(':id')
+  @Put(':id')
   @HttpCode(200)
-  async getById(@Param('id') id: string) {
-    return this.service.getAccountType(id);
+  async update(@Param('id') id: string, @Body() dto: UpdateAccountTypeDto) {
+    return this.service.updateAccountType(id, dto);
   }
 
   @Delete(':id')

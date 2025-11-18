@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateAccountTypeDto } from './dto/create-account-type.dto';
 
 @Injectable()
 export class AccountTypeRepository {
@@ -10,12 +9,19 @@ export class AccountTypeRepository {
     return this.prisma.accountType.findMany();
   }
 
-  async create(data: CreateAccountTypeDto) {
+  async create(data: { name: string; description: string }) {
     return this.prisma.accountType.create({ data });
   }
 
   async findById(id: string) {
     return this.prisma.accountType.findUnique({ where: { id } });
+  }
+
+  async update(id: string, data: { name?: string; description?: string }) {
+    return this.prisma.accountType.update({
+      where: { id },
+      data,
+    });
   }
 
   async delete(id: string) {
