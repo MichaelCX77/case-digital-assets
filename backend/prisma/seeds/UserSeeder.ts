@@ -1,9 +1,20 @@
-// prisma/seeds/seed.users.ts
 import { PrismaClient, User } from '@prisma/client';
 import { ISeeder } from './core/ISeeder';
 import * as bcrypt from 'bcrypt';
 
+/**
+ * Seeder for populating the User table with initial users.
+ * Uses roles from context and hashes passwords before creating users.
+ */
 export class UserSeeder implements ISeeder {
+  /**
+   * Seeds the database with default users using upsert.
+   * Each user is created if missing, or updated if already exists.
+   * Passwords are securely hashed using bcrypt.
+   * Adds an array of created users to the context for use by other seeders.
+   * @param prisma PrismaClient instance for database operations.
+   * @param context Object containing roles and receives seeded users.
+   */
   async run(prisma: PrismaClient, context: any) {
     const roles = context.roles;
 

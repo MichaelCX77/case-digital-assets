@@ -1,8 +1,18 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
+/**
+ * Global filter to handle HTTP and Prisma exceptions gracefully,
+ * returning structured error objects in API responses.
+ */
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
+  /**
+   * Handles exceptions thrown in the application and formats API error responses.
+   * - Returns a 400 for Prisma FK constraint errors (code P2003).
+   * - Extracts status and message from HttpException.
+   * - Groups 'detail' objects when present for structured error handling.
+   */
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
@@ -13,7 +23,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       exception.code === 'P2003'
     ) {
       return response.status(400).json({
-        message: 'Referência inválida: o dado informado não existe nos registros relacionados (ex: roleId).',
+        message: 'Invalid reference: The provided data does not exist in related records (e.g. roleId).',
         code: exception.code,
         time: new Date().toISOString(),
       });
@@ -28,7 +38,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       ? exception.getResponse()
       : { message: exception.message || 'Internal server error' };
 
-    // Extrai message e detail, mantendo detail sempre como objeto ou undefined
+    // Extracts message and detail, keeping detail grouped when it's an object
     let message = (typeof responseBody === 'object' && responseBody !== null && 'message' in responseBody)
       ? responseBody.message
       : typeof responseBody === 'string'
@@ -44,7 +54,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       time: new Date().toISOString()
     };
 
-    // Só adiciona detail se existe e é objeto (mantém agrupado)
+    // Only adds detail if it exists and is an object
     if (detail && typeof detail === 'object' && detail !== null) {
       baseResponse.detail = detail;
     }

@@ -1,3 +1,9 @@
+/// Prisma schema for the banking system.
+///
+/// This schema defines models for users, accounts, roles, transactions, and their relationships.
+/// All table and field mappings use explicit naming for clarity and consistency with SQL schema.
+/// Each model includes documentation to clarify purpose, relations, required fields, and special behaviors.
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,70 +16,100 @@ datasource db {
 //
 // USERS
 //
+/// User model represents a system user.
+/// Each user is uniquely identified and assigned a role.
+/// Supports many-to-many associations with accounts and tracks which transactions each user operates.
 model User {
+  /// User ID (UUID, primary key).
   id           String    @id @default(uuid()) @map("id_user")
+  /// User name.
   name         String    @map("name")
+  /// User email (unique).
   email        String    @unique @map("email")
+  /// Hashed user password.
   password     String    @map("password")
-
-  roleId       String    @map("role_id")  // <- Remove o "?" para tornar obrigatório
-  role         Role      @relation(fields: [roleId], references: [id], onDelete: Restrict) // <- Torna obrigatório e restrito
-
+  /// Foreign key to Role (required).
+  roleId       String    @map("role_id")
+  /// Role relationship; restrict deletion for DB integrity.
+  role         Role      @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  /// Accounts associated to user (N:N via UserAccount).
   accounts     UserAccount[]
+  /// Transactions performed by user as operator.
   transactions Transaction[] @relation("OperatorTransactions")
-
+  /// When the user was created.
   createdAt    DateTime  @default(now()) @map("created_at")
+  /// When the user was last updated.
   updatedAt    DateTime  @updatedAt @map("updated_at")
-
   @@map("user")
 }
 
 //
 // ACCOUNT TYPE
 //
+/// AccountType defines distinct categories of accounts (e.g., Checking, Savings).
+/// Each type has unique name, description, and is referenced by accounts.
 model AccountType {
+  /// Account type ID (UUID, primary key).
   id          String   @id @default(uuid()) @map("id_account_type")
+  /// Unique account type name.
   name        String   @unique @map("name")
+  /// Description of the account type.
   description String   @map("description")
+  /// Accounts using this type.
   accounts    Account[]
-
+  /// When the type was created.
   createdAt   DateTime @default(now()) @map("created_at")
+  /// When the type was updated.
   updatedAt   DateTime @updatedAt @map("updated_at")
-
   @@map("account_type")
 }
 
 //
 // ACCOUNT
 //
+/// Account model stores balance and indicates type/status.
+/// Linked N:N to users via UserAccount; holds transactions.
+/// Account type is required; status defaults to "ACTIVE".
 model Account {
+  /// Account ID (UUID, primary key).
   idAccount     String         @id @default(uuid()) @map("id_account")
+  /// Account balance (defaults to 0).
   balance       Float          @default(0) @map("balance")
+  /// Foreign key to AccountType (required).
   accountTypeId String         @map("account_type_id")
+  /// Relation to account type.
   accountType   AccountType    @relation(fields: [accountTypeId], references: [id])
-  status        String         @default("ACTIVE") @map("status")               // <-- NOVO CAMPO
-
+  /// Account status (defaults to "ACTIVE").
+  status        String         @default("ACTIVE") @map("status")
+  /// Users associated with account (N:N).
   users         UserAccount[]
+  /// Transactions related to this account.
   transactions  Transaction[]
-
+  /// When the account was created.
   createdAt     DateTime       @default(now()) @map("created_at")
+  /// When the account was updated.
   updatedAt     DateTime       @updatedAt @map("updated_at")
-
   @@map("account")
 }
+
 //
 // USER ↔ ACCOUNT (N:N)
 //
+/// UserAccount links users and accounts in a many-to-many relationship.
+/// Deletion or update cascades for both sides for DB integrity.
 model UserAccount {
+  /// Foreign key to Account.
   accountId String @map("account_id")
+  /// Foreign key to User.
   userId    String @map("user_id")
-
+  /// Relation to Account; cascades on delete/update.
   account Account @relation(fields: [accountId], references: [idAccount], onDelete: Cascade, onUpdate: Cascade)
+  /// Relation to User; cascades on delete/update.
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
+  /// When the link was created.
   createdAt DateTime @default(now()) @map("created_at")
+  /// When the link was updated.
   updatedAt DateTime @updatedAt @map("updated_at")
-
   @@id([accountId, userId])
   @@map("user_account")
 }
@@ -81,40 +117,57 @@ model UserAccount {
 //
 // TRANSACTIONS
 //
+/// Transaction model logs account operations (deposit, withdrawal, transfer, etc.).
+/// Stores before/after balances, operator, source/destination, timestamp.
 model Transaction {
+  /// Transaction ID (UUID, primary key).
   idTransaction        String    @id @default(uuid()) @map("id_transaction")
+  /// Foreign key to Account.
   accountId            String    @map("account_id")
+  /// Type of transaction ("DEPOSIT", "TRANSFER", etc.).
   type                 String    @map("type")
+  /// Transaction amount.
   amount               Float     @map("amount")
+  /// Timestamp when transaction occurred.
   timestamp            DateTime  @default(now()) @map("timestamp")
+  /// Balance before transaction.
   balanceBefore        Float     @map("balance_before")
+  /// Balance after transaction.
   balanceAfter         Float     @map("balance_after")
+  /// User ID for transaction operator (nullable).
   operatorUserId       String?   @map("operator_user_id")
-  destinationAccountId String?   @map("destination_account_id") // <-- novo campo para conta de destino
-  sourceAccountId      String?   @map("source_account_id")      // <-- novo campo para conta origem (para registro TRANSFER_IN)
-
+  /// Destination account ID (nullable, transfer only).
+  destinationAccountId String?   @map("destination_account_id")
+  /// Source account ID (nullable, transfer only).
+  sourceAccountId      String?   @map("source_account_id")
+  /// Relation to account; cascades on delete/update.
   account   Account @relation(fields: [accountId], references: [idAccount], onDelete: Cascade, onUpdate: Cascade)
+  /// Relation to operator user; set null on delete.
   operator  User?   @relation("OperatorTransactions", fields: [operatorUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-
+  /// Creation timestamp.
   createdAt DateTime @default(now()) @map("created_at")
+  /// Last update timestamp.
   updatedAt DateTime @updatedAt @map("updated_at")
-
   @@map("transaction")
 }
 
 //
 // ROLES
 //
-
+/// Role model represents user permission profiles (e.g., OWNER, ADMIN).
+/// Used for RBAC across the system; referenced by users.
 model Role {
+  /// Role ID (UUID, primary key).
   id          String   @id @default(uuid()) @map("id")
+  /// Unique role name ("OWNER", "ADMIN", etc.).
   name        String   @unique @map("name")
+  /// Role description.
   description String   @map("description")
-
-  users       User[]   // permanece igual
-
+  /// Users assigned to this role.
+  users       User[]
+  /// When the role was created.
   createdAt   DateTime @default(now()) @map("created_at")
+  /// When the role was updated.
   updatedAt   DateTime @updatedAt @map("updated_at")
-
   @@map("role")
 }

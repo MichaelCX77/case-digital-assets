@@ -1,7 +1,18 @@
 import { PrismaClient } from '@prisma/client';
 import { ISeeder } from './core/ISeeder';
 
+/**
+ * Seeder for populating the AccountType table with pre-configured types.
+ * Adds types to context for use by other seeders.
+ */
 export class AccountTypeSeeder implements ISeeder {
+  /**
+   * Seeds the database with default account types using upsert.
+   * Each account type is created if missing, or updated if already exists.
+   * Adds the seeded types array to the context.
+   * @param prisma PrismaClient instance for database operations.
+   * @param context Object to save seeded AccountTypes for chaining.
+   */
   async run(prisma: PrismaClient, context: any) {
     const accountTypesData = [
       {

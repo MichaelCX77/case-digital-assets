@@ -1,7 +1,18 @@
 import { PrismaClient } from '@prisma/client';
 import { ISeeder } from './core/ISeeder';
 
+/**
+ * Seeder for populating the Role table with default roles.
+ * Adds roles to context as a map of name to role ID.
+ */
 export class RoleSeeder implements ISeeder {
+  /**
+   * Seeds the database with default roles using upsert.
+   * Each role is created if missing, or updated if already exists.
+   * Adds a map of role names to their UUIDs to the context for later use.
+   * @param prisma PrismaClient instance for database operations.
+   * @param context Object to receive the seeded roles map for chaining.
+   */
   async run(prisma: PrismaClient, context: any) {
     const rolesData = [
       { name: 'OWNER', description: 'Owner has full access and controls all resources.' },

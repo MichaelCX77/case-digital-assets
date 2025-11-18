@@ -6,15 +6,28 @@ import * as path from 'path';
 import { verifyToken } from '../auth/jwt.util';
 import { UserService } from '../user/user.service';
 
+/**
+ * Guard for API Gateway authorization, handling role-based and public route access.
+ * - Loads route configuration from a YAML file.
+ * - Matches routes with params and wildcards.
+ * - Enforces authentication and role permissions.
+ */
 @Injectable()
 export class GatewayGuard implements CanActivate {
   private routes: any[] = [];
   private lastLoaded = 0;
 
-  private localRoutes = ['/auth/token', '/health', '/','/health'];
+  /**
+   * List of local routes that do not require authentication.
+   */
+  private localRoutes = ['/auth/token', '/health', '/', '/health'];
 
   constructor(private userService: UserService) {}
 
+  /**
+   * Loads and parses routes from YAML file when the file is modified.
+   * Updates internal routes cache.
+   */
   private loadYaml() {
     const fullPath = path.join(process.cwd(), 'src/config/routes.yml');
     const stats = fs.statSync(fullPath);
@@ -40,7 +53,11 @@ export class GatewayGuard implements CanActivate {
   }
 
   /**
-   * Improved route matcher supporting :params and /* wildcards
+   * Matches an incoming request path and HTTP method to a configured route.
+   * Supports :param segments and /* wildcards.
+   * @param reqPath Incoming request path.
+   * @param reqMethod Incoming HTTP method.
+   * @returns Matched route object or undefined.
    */
   private matchRoute(reqPath: string, reqMethod: string) {
     const cleanReqPath = reqPath.replace(/\/+$/, '');
@@ -62,9 +79,7 @@ export class GatewayGuard implements CanActivate {
 
       // 2. Param match, e.g., /users/:id => /users/abcd
       const routeRegex = '^' + routePath
-        // Escape slashes
         .replace(/\//g, '\\/')
-        // Params like :id => [^/]+
         .replace(/:[^\\/]+/g, '[^\\/]+') + '$';
 
       if (
@@ -86,6 +101,13 @@ export class GatewayGuard implements CanActivate {
     });
   }
 
+  /**
+   * Main canActivate method used by NestJS to authorize each request.
+   * Checks route match, authentication, and user role permissions as needed.
+   * Throws standard HTTP exceptions for errors.
+   * @param context Execution context provided by NestJS.
+   * @returns True if request is authorized, otherwise throws an exception.
+   */
   async canActivate(context: ExecutionContext): Promise<boolean> {
     this.loadYaml();
 
