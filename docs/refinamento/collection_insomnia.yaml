@@ -1,12 +1,12 @@
 type: collection.insomnia.rest/5.0
-name: API Gestão Bancária
+name: Banking Management API
 meta:
   id: wrk_bedc72ddf5144418bd9225af5463f44b
   created: 1763293279071
   modified: 1763293279071
   description: ""
 collection:
-  - name: Clientes
+  - name: Users
     meta:
       id: fld_e34acdbcb92b4c12b0ac97ffde0923d4
       created: 1763293297966
@@ -14,14 +14,14 @@ collection:
       sortKey: -1763293297966
       description: ""
     children:
-      - url: "{{ base_url }}/clientes"
-        name: Listar clientes
+      - url: "{{ base_url }}/users"
+        name: List users
         meta:
           id: req_c9eb5fdb32b141598b3a98c67e1ad1e6
           created: 1763293279075
           modified: 1763293472478
           isPrivate: false
-          description: Retorna todos os clientes cadastrados.
+          description: Returns all registered users.
           sortKey: -1763293358463
         method: GET
         parameters:
@@ -37,24 +37,24 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ base_url }}/clientes"
-        name: Criar cliente
+      - url: "{{ base_url }}/users"
+        name: Create user
         meta:
           id: req_0010882f22cb4700b2d58fdc3b97df88
           created: 1763293279077
           modified: 1763293485569
           isPrivate: false
-          description: Cria um novo cliente.
+          description: Creates a new user.
           sortKey: -1763293358563
         method: POST
         body:
           mimeType: application/json
           text: |-
             {
-              "nome": "João da Silva",
-              "email": "joao@email.com",
-              "senha": "SenhaForte123",
-              "perfil_acesso": "titular"
+              "name": "John Doe",
+              "email": "john@email.com",
+              "password": "StrongPassword123",
+              "roleId": "owner"
             }
         settings:
           renderRequestBody: true
@@ -64,14 +64,14 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ base_url }}/clientes/1"
-        name: Obter cliente por ID
+      - url: "{{ base_url }}/users/1"
+        name: Get user by ID
         meta:
           id: req_749f09bcd5e34a579daeba9b6df0e3b0
           created: 1763293279078
           modified: 1763293476558
           isPrivate: false
-          description: Busca dados do cliente pelo ID.
+          description: Fetch user data by ID.
           sortKey: -1763293358413
         method: GET
         settings:
@@ -82,24 +82,24 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ base_url }}/clientes/1"
-        name: Atualizar cliente
+      - url: "{{ base_url }}/users/1"
+        name: Update user
         meta:
           id: req_b2f85d0d54054491b274ebf06f48d439
           created: 1763293279079
           modified: 1763293442878
           isPrivate: false
-          description: Atualiza os dados do cliente.
+          description: Updates user information.
           sortKey: -1763293357963
         method: PUT
         body:
           mimeType: application/json
           text: |-
             {
-              "nome": "João S. Silva",
-              "email": "joao.silva@email.com",
-              "senha": "NovaSenha2025",
-              "perfil_acesso": "titular"
+              "name": "John S. Doe",
+              "email": "john.s.doe@email.com",
+              "password": "NewPassword2025",
+              "roleId": "owner"
             }
         settings:
           renderRequestBody: true
@@ -109,14 +109,14 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ base_url }}/clientes/1"
-        name: Remover cliente
+      - url: "{{ base_url }}/users/1"
+        name: Remove user
         meta:
           id: req_3d7b7153b76d4c57808c8d88ec654daa
           created: 1763293279080
           modified: 1763293439160
           isPrivate: false
-          description: Remove o cliente especificado.
+          description: Removes the specified user.
           sortKey: -1763293357863
         method: DELETE
         settings:
@@ -127,14 +127,14 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ base_url }}/clientes/1/contas"
-        name: Contas vinculadas ao cliente
+      - url: "{{ base_url }}/users/1/accounts"
+        name: Accounts linked to user
         meta:
           id: req_bd8d71a9ad4f4bb08841bc6607748789
           created: 1763293279081
           modified: 1763293478507
           isPrivate: false
-          description: Lista as contas correntes às quais o cliente está vinculado.
+          description: Lists all accounts linked to the user.
           sortKey: -1763293358388
         method: GET
         settings:
@@ -145,21 +145,21 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ base_url }}/clientes/1/contas"
-        name: Vincular conta ao cliente
+      - url: "{{ base_url }}/users/1/accounts"
+        name: Link account to user
         meta:
           id: req_97a4d48f4a4144409678c2795a220f44
           created: 1763293279082
           modified: 1763293487154
           isPrivate: false
-          description: Vincula uma conta ao cliente.
+          description: Links an account to a user.
           sortKey: -1763293358513
         method: POST
         body:
           mimeType: application/json
           text: |-
             {
-              "id_conta": 109
+              "accountId": 109
             }
         settings:
           renderRequestBody: true
@@ -169,14 +169,14 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ base_url }}/contas/101/clientes"
-        name: Clientes vinculados à conta
+      - url: "{{ base_url }}/accounts/101/users"
+        name: Users linked to account
         meta:
           id: req_3ad0528abc784de6b986f0e27f48e0a1
           created: 1763293279096
           modified: 1763293481591
           isPrivate: false
-          description: Lista os clientes vinculados à conta corrente.
+          description: Lists users linked to the account.
           sortKey: -1763293358375.5
         method: GET
         settings:
@@ -187,21 +187,21 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ base_url }}/contas/101/clientes"
-        name: Vincular cliente à conta
+      - url: "{{ base_url }}/accounts/101/users"
+        name: Link user to account
         meta:
           id: req_481408faf738406a8ab16ec6e6bec98b
           created: 1763293279097
           modified: 1763293489854
           isPrivate: false
-          description: Vincula um cliente à conta corrente.
+          description: Links a user to the account.
           sortKey: -1763293358488
         method: POST
         body:
           mimeType: application/json
           text: |-
             {
-              "id_cliente": 1
+              "userId": 1
             }
         settings:
           renderRequestBody: true
@@ -211,7 +211,7 @@ collection:
             send: true
             store: true
           rebuildPath: true
-  - name: Transacoes
+  - name: Transactions
     meta:
       id: fld_d2ce87585e4c469abb21db22d0060107
       created: 1763293337792
@@ -219,14 +219,14 @@ collection:
       sortKey: -1763293337792
       description: ""
     children:
-      - url: "{{ base_url }}/contas/101/transacoes"
-        name: Histórico de transações da conta
+      - url: "{{ base_url }}/accounts/101/transactions"
+        name: Account transaction history
         meta:
           id: req_17b35ae351ae4628a3b0d6c645a68a71
           created: 1763293279097
           modified: 1763293361913
           isPrivate: false
-          description: Lista o histórico de transações associadas à conta.
+          description: Lists transaction history associated with the account.
           sortKey: -1763293344321
         method: GET
         settings:
@@ -237,23 +237,23 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ base_url }}/contas/101/transacoes"
-        name: Registrar transação
+      - url: "{{ base_url }}/accounts/101/transactions"
+        name: Register transaction
         meta:
           id: req_88ed07f8686346e0adb617c1e25abdac
           created: 1763293279098
           modified: 1763293496121
           isPrivate: false
-          description: Registra uma nova operação financeira na conta corrente.
+          description: Registers a new financial operation on the account.
           sortKey: -1763293344421
         method: POST
         body:
           mimeType: application/json
           text: |-
             {
-              "tipo": "DEPOSITO",
-              "valor": 200.00,
-              "id_cliente_operador": 1
+              "type": "DEPOSIT",
+              "amount": 200.00,
+              "operatorUserId": 1
             }
         settings:
           renderRequestBody: true
@@ -263,7 +263,7 @@ collection:
             send: true
             store: true
           rebuildPath: true
-  - name: Contas
+  - name: Accounts
     meta:
       id: fld_5fbf500325fd436095e1204553f19144
       created: 1763293395989
@@ -271,14 +271,14 @@ collection:
       sortKey: -1763293395989
       description: ""
     children:
-      - url: "{{ base_url }}/contas"
-        name: Listar contas correntes
+      - url: "{{ base_url }}/accounts"
+        name: List bank accounts
         meta:
           id: req_5cf22f1386a84672a9b68eb2f4527448
           created: 1763293279083
           modified: 1763293413212
           isPrivate: false
-          description: Retorna todas as contas correntes cadastradas.
+          description: Returns all registered bank accounts.
           sortKey: -1763293400921
         method: GET
         settings:
@@ -289,21 +289,21 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ base_url }}/contas"
-        name: Criar conta corrente
+      - url: "{{ base_url }}/accounts"
+        name: Create bank account
         meta:
           id: req_af8fc9ba17d3445ea70bcf8e4eb8496b
           created: 1763293279084
           modified: 1763294314171
           isPrivate: false
-          description: Cria uma nova conta corrente.
+          description: Creates a new bank account.
           sortKey: -1763293400671
         method: POST
         body:
           mimeType: application/json
           text: |-
             {
-              "saldo": 0.0
+              "balance": 0.0
             }
         settings:
           renderRequestBody: true
@@ -313,14 +313,14 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ base_url }}/contas/101"
-        name: Obter conta corrente por ID
+      - url: "{{ base_url }}/accounts/101"
+        name: Get bank account by ID
         meta:
           id: req_e0921f583906451fb4305c7afcd163d4
           created: 1763293279085
           modified: 1763293404697
           isPrivate: false
-          description: Busca dados de uma conta corrente pelo ID.
+          description: Fetch bank account data by ID.
           sortKey: -1763293400721
         method: GET
         settings:
@@ -331,14 +331,14 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ base_url }}/contas/101"
-        name: Remover conta corrente
+      - url: "{{ base_url }}/accounts/101"
+        name: Remove bank account
         meta:
           id: req_39514ae4bc744e2998b2d79223d10a5f
           created: 1763293279094
           modified: 1763293400646
           isPrivate: false
-          description: Remove a conta corrente especificada.
+          description: Removes the specified bank account.
           sortKey: -1763293400621
         method: DELETE
         settings:
@@ -349,7 +349,7 @@ collection:
             send: true
             store: true
           rebuildPath: true
-  - name: ContaCliente
+  - name: AccountUser
     meta:
       id: fld_2fa8231b77c7477a9e9d7982d9819c0d
       created: 1763298389566
