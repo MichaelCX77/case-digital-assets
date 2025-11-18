@@ -7,6 +7,8 @@
   "license": "UNLICENSED",
   "scripts": {
     "migrate:dev": "npx prisma migrate dev",
+    "migrate:deploy": "npx prisma migrate deploy",
+    "setup": "npm install && npm run migrate:deploy && npm run start:dev",
     "build": "nest build && cp -r src/config dist/src/config",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
