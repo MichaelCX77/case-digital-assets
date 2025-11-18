@@ -1,21 +1,23 @@
+/**
+ * Provides authentication logic:
+ * Validates user credentials, issues JWT access tokens, and
+ * throws exceptions for invalid authentication attempts.
+ */
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { generateToken } from './jwt.util';
 
-/**
- * Service responsible for authentication logic and JWT token issuing.
- */
 @Injectable()
 export class AuthService {
   constructor(private readonly prisma: PrismaService) {}
 
   /**
-   * Issues a JWT token using user email and password.
-   * @param email User email for authentication.
+   * Authenticates a user by email and password and issues a JWT token.
+   * @param email Email address to authenticate.
    * @param password User password.
-   * @returns An object containing the access_token (JWT).
-   * @throws UnauthorizedException if email or password is invalid.
+   * @returns Object containing a JWT access_token.
+   * @throws UnauthorizedException if credentials are invalid.
    */
   async issueTokenByEmail(email: string, password: string): Promise<{ access_token: string }> {
     const normalized = email.trim().toLowerCase();
@@ -34,9 +36,8 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    // Set roles in the token payload
+    // Include roles in token payload
     const roles = user.role ? [user.role.name] : [];
-
     const access_token = generateToken(user.id, roles);
 
     return { access_token };

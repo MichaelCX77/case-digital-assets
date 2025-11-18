@@ -1,146 +1,55 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { Request } from 'express';
-import * as yaml from 'js-yaml';
-import * as fs from 'fs';
-import * as path from 'path';
-import { verifyToken } from '../../modules/auth/jwt.util';
-import { UserService } from '../../modules/user/user.service';
-
 /**
- * Guard for API Gateway authorization, handling role-based and public route access.
- * - Loads route configuration from a YAML file.
- * - Matches routes with params and wildcards.
- * - Enforces authentication and role permissions.
+ * Enforces and validates the `correlation-id` header (UUID v4) 
+ * for request tracking. If the header is missing or invalid, 
+ * logs the event and responds with a BadRequest error.
  */
+
+import { Injectable, NestMiddleware, Inject, BadRequestException } from '@nestjs/common';
+import { Request, Response, NextFunction } from 'express';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import type { LoggerService } from '@nestjs/common';
+
 @Injectable()
-export class GatewayGuard implements CanActivate {
-  private routes: any[] = [];
-  private lastLoaded = 0;
+export class CorrelationIdMiddleware implements NestMiddleware {
+  /**
+   * @param logger Winston-based logger for structured logging.
+   */
+  constructor(
+    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService,
+  ) {}
 
   /**
-   * List of local routes that do not require authentication.
+   * Validates the presence and format of a `correlation-id` header. 
+   * Sets it on the request object for downstream processing. 
+   * Logs any invalid or missing header and throws an error.
+   * 
+   * @param req Express request object (with optional correlationId)
+   * @param res Express response object
+   * @param next Next middleware function
+   * @throws {BadRequestException} If header is missing or not UUID v4.
    */
-  private publicRoutes = ['/auth/token', '/health', '/'];
+  use(req: Request & { correlationId?: string }, res: Response, next: NextFunction) {
+    const correlationId = req.headers['correlation-id'] || req.headers['x-correlation-id'];
+    const { method, originalUrl } = req;
 
-  constructor(private userService: UserService) {}
+    if (!correlationId || typeof correlationId !== 'string' || !/^[0-9a-fA-F-]{36}$/.test(correlationId)) {
+      this.logger.log({
+        level: 'info',
+        message: `Invalid or missing correlation-id`,
+        method,
+        url: originalUrl,
+        statusCode: 400,
+        correlationId: undefined,
+        timestamp: new Date().toISOString(),
+      });
 
-  private loadYaml() {
-    const fullPath = path.join(process.cwd(), 'src/config/routes.yml');
-    const stats = fs.statSync(fullPath);
-    if (stats.mtimeMs > this.lastLoaded) {
-      const file = fs.readFileSync(fullPath, 'utf8');
-      const doc = yaml.load(file) as any;
-
-      this.routes = [];
-      if (doc && doc.routes) {
-        for (const serviceName of Object.keys(doc.routes)) {
-          const serviceRoutes = doc.routes[serviceName].map((r: any) => ({
-            ...r,
-            path: r.path,
-            method: r.method,
-            roles: r.roles,
-            public: r.public ?? false,
-          }));
-          this.routes.push(...serviceRoutes);
-        }
-      }
-      this.lastLoaded = stats.mtimeMs;
-    }
-  }
-
-  private matchRoute(reqPath: string, reqMethod: string) {
-    const cleanReqPath = reqPath.replace(/\/+$/, '');
-
-    return this.routes.find(r => {
-      const routePath = r.path.replace(/\/+$/, '');
-
-      // 1. Wildcard match, e.g., /accounts/*
-      if (routePath.endsWith('/*')) {
-        const base = routePath.slice(0, -2);
-        if (
-          (cleanReqPath === base ||
-            cleanReqPath.startsWith(base + '/')) &&
-          (r.method === 'ALL' || r.method === reqMethod)
-        ) {
-          return true;
-        }
-      }
-
-      // 2. Param match, e.g., /users/:id => /users/abcd
-      const routeRegex = '^' + routePath
-        .replace(/\//g, '\\/')
-        .replace(/:[^\\/]+/g, '[^\\/]+') + '$';
-
-      if (
-        new RegExp(routeRegex).test(cleanReqPath) &&
-        (r.method === 'ALL' || r.method === reqMethod)
-      ) {
-        return true;
-      }
-
-      // 3. Exact match
-      if (
-        cleanReqPath === routePath &&
-        (r.method === 'ALL' || r.method === reqMethod)
-      ) {
-        return true;
-      }
-
-      return false;
-    });
-  }
-
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    this.loadYaml();
-
-    const req: Request = context.switchToHttp().getRequest();
-
-    if (this.publicRoutes.includes(req.path)) {
-      return true;
+      throw new BadRequestException(
+        'Invalid or missing header: correlation-id. Must be UUID v4.',
+      );
     }
 
-    const route = this.matchRoute(req.path, req.method);
-    if (!route) {
-      throw new NotFoundException('Route not found');
-    }
+    req.correlationId = correlationId;
 
-    if (route.public) {
-      return true;
-    }
-
-    const authHeader = req.headers['authorization'];
-    const token = authHeader?.split(' ')[1];
-    if (!token) {
-      throw new UnauthorizedException('Token missing');
-    }
-
-    let payload: any;
-    try {
-      payload = verifyToken(token);
-    } catch (err) {
-      throw new UnauthorizedException('Invalid token');
-    }
-
-    const userId = payload.sub;
-
-    // Roles (do banco) — nota: se você quiser usar só do token, troque abaixo!
-    const userRoles = await this.userService.getRoleNamesById(userId);
-
-    if (!userRoles || userRoles.length === 0) {
-      throw new ForbiddenException('User not found or has no permission');
-    }
-
-    const hasRole = userRoles.some(role => route.roles.includes(role));
-    if (!hasRole) {
-      throw new ForbiddenException('Access denied');
-    }
-
-    // 💡 CRUCIAL! Salva infos do usuário para o restante do ciclo HTTP
-    req.user = {
-      userId,     // ID do usuário autenticado (mesmo que sub do token)
-      roles: userRoles, // roles!
-    };
-
-    return true;
+    next();
   }
 }

@@ -1,17 +1,17 @@
-import jwt from 'jsonwebtoken';
-
 /**
- * Utility functions for JWT token generation and verification.
+ * JWT utility functions for token generation and verification.
+ * Uses environment variables for secret and expiration.
  */
+import jwt from 'jsonwebtoken';
 
 const SECRET = process.env.JWT_SECRET || 'super-secret';
 const EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h';
 
 /**
- * Generates a JWT token with user_id and roles in the payload.
- * @param userId The user's id to include in the token payload.
- * @param roles Array of user roles to include in the token payload.
- * @returns A signed JWT token string.
+ * Generates a JWT token for a user.
+ * @param userId User ID to embed in token payload.
+ * @param roles Array of user roles for payload.
+ * @returns Signed JWT token string.
  */
 export function generateToken(userId: string, roles: string[]): string {
   const payload = { sub: userId, roles };
@@ -22,15 +22,15 @@ export function generateToken(userId: string, roles: string[]): string {
 }
 
 /**
- * Verifies a JWT token and returns its decoded payload.
- * @param token JWT token string to verify.
+ * Verifies and decodes a JWT token.
+ * @param token JWT token string.
  * @returns Decoded token payload if valid.
- * @throws Error if verification fails.
+ * @throws Error if the token is invalid or expired.
  */
 export function verifyToken(token: string): any {
   try {
     return jwt.verify(token, SECRET);
-  } catch (err) { 
+  } catch (err) {
     throw err;
   }
 }

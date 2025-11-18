@@ -1,19 +1,21 @@
+/**
+ * Controller for authentication endpoints.
+ * Exposes route for generating JWT tokens using email and password.
+ * Includes OpenAPI/Swagger docs for input and output models.
+ */
 import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiTags, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-/**
- * Controller for authentication endpoints.
- */
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   /**
-   * Generates an authentication token using email and password.
-   * @param body Object containing the user's email and password.
-   * @returns JWT token for authenticated access.
+   * Generates a JWT authentication token based on user credentials.
+   * @param body Object containing user's email and password.
+   * @returns Object containing JWT token.
    */
   @Post('token')
   @ApiOperation({ summary: 'Generate authentication token using email and password' })

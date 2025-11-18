@@ -1,3 +1,8 @@
+/**
+ * Exception filter for HTTP errors that logs request details and responds
+ * with structured error information. Logs errors with Winston and replaces
+ * double quotes in messages with single quotes for consistency.
+ */
 import {
   ExceptionFilter,
   Catch,
@@ -11,17 +16,28 @@ import { Logger } from 'winston';
 
 @Catch(HttpException)
 export class CustomExceptionFilter implements ExceptionFilter {
+  /**
+   * @param logger Winston logger instance for error logging.
+   */
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: Logger,
   ) {}
 
+  /**
+   * Handles HttpExceptions by logging error details and 
+   * sending a structured JSON response.
+   *
+   * @param exception Thrown HttpException instance
+   * @param host Current execution context
+   */
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const req = ctx.getRequest<Request>();
     const res = ctx.getResponse<Response>();
     const status = exception.getStatus();
     const correlationId = req.headers['correlation-id'] || req.headers['x-correlation-id'];
-    // substitui aspas duplas no message por aspas simples
+
+    // Replace double quotes with single quotes in the error message
     const customMessage = exception.message.replace(/"/g, "'");
 
     this.logger.error(

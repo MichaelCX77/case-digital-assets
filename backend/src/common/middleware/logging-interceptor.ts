@@ -1,3 +1,8 @@
+/**
+ * Interceptor for structured logging of incoming and outgoing HTTP requests.
+ * Logs request details including method, URL, correlationId, transactionId, userId, and latency.
+ * Uses Winston for logging. IN logs before handling, OUT logs after response is sent.
+ */
 import {
   Injectable,
   NestInterceptor,
@@ -11,10 +16,19 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
+  /**
+   * @param logger Logger service (Winston) for logging request data.
+   */
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService,
   ) {}
 
+  /**
+   * Intercepts and logs each request (IN) and response (OUT) with correlation, transaction, timing and user info.
+   * @param context NestJS execution context
+   * @param next Next call handler in pipeline
+   * @returns Observable with tap for logging after response
+   */
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const req = context.switchToHttp().getRequest();
 
@@ -23,10 +37,11 @@ export class LoggingInterceptor implements NestInterceptor {
       (req.headers['x-correlation-id'] as string) ||
       undefined;
     const { method, originalUrl } = req;
-    const userId = (req.user as any)?.userId; // req.user.userId está correto após seu Guard
+    const userId = (req.user as any)?.userId;
     const start = Date.now();
     const transactionId = req.transactionId;
 
+    // Log request entry (IN)
     this.logger.log({
       type: 'IN',
       correlationId,
@@ -37,6 +52,7 @@ export class LoggingInterceptor implements NestInterceptor {
       userId,
     });
 
+    // Log response exit (OUT)
     return next.handle().pipe(
       tap((data) => {
         const elapsed = Date.now() - start;
@@ -46,7 +62,7 @@ export class LoggingInterceptor implements NestInterceptor {
           const parsed = typeof data === 'string' ? JSON.parse(data) : data;
           parsedMessage = parsed?.message;
         } catch {
-          // ignora se não for JSON
+          // non-JSON response, ignore
         }
 
         this.logger.log({
