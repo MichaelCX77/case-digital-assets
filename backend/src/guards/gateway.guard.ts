@@ -11,7 +11,7 @@ export class GatewayGuard implements CanActivate {
   private routes: any[] = [];
   private lastLoaded = 0;
 
-  private localRoutes = ['/auth/token', '/health', '/'];
+  private localRoutes = ['/auth/token', '/health', '/','/health'];
 
   constructor(private userService: UserService) {}
 
