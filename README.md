@@ -1,29 +1,84 @@
-# Case de engenharia Itau - .NodeJS
+# Projeto Case Consignado — Backend
 
-## Introdução
-Neste projeto esta sendo utilizada a base de dados sqlite com a seguinte tabela:
+Este é o backend do projeto **Case Consignado** (`MichaelCX77/case-digital-assets`).  
+Abaixo estão as etapas para rodar o projeto localmente.
 
-    Tabela: CLIENTES > "Registro relacionados ao cadastro de clientes"
-	- id    - INTEGER NOT NULL AUTOINCREMENT PRIMARY KEY
-	- nome  - TEXT    NOT NULL
-	- email - TEXT    NOT NULL UNIQUE
-	- saldo - FLOAT
+## Pré-requisitos
 
-No projeto foi disponibilizada uma API de Clientes com os metodos abaixo realizando acoes diretas na base de dados:
+- [Node.js (v18+)](https://nodejs.org/)
+- [npm](https://www.npmjs.com/)
+- [Docker](https://www.docker.com/) (recomendado para banco de dados local)
+- [PostgreSQL](https://www.postgresql.org/) (caso prefira instalar sem Docker)
 
-	GET    clientes                - LISTAR TODOS OS CLIENTES CADASTRADOS
-	GET    clientes/{ID}           - RETORNAR OS DETALHES DE UM DETERMINADO CLIENTES PELO ID
-	POST   clientes                - REALIZA O CADASTRO DE UM NOVO CLIENTE
-	PUT    clientes/{ID}           - EDITA O CADASTRO DE UM CLIENTE JÁ EXISTENTE
-	DELETE clientes/{ID}           - EXCLUI O CADASTRO DE UM CLIENTE
-	POST   clientes/{ID}/depositar - ADICIONA OU SUBTRAI DETERMINADO VALOR DO SALDO DE UM CLIENTE
-    POST   clientes/{ID}/sacar     - ADICIONA OU SUBTRAI DETERMINADO VALOR DO SALDO DE UM CLIENTE
+## Instalação
 
-## Ações a serem realizadas
-1. Faça o fork do projeto no seu github. Não realize commits na branch main e nem crie novas branchs.
-2. O código da api de clientes faz mal uso dos objetos, não segue boas práticas e não possui qualidade. Refatore o codigo utilizando as melhores bibliotecas, praticas, patterns e garanta a qualidade da aplicação. Fique a vontade para mudar o que achar necessário.
-3. O controle de saldo do cliente possui um erro. Identifique e implemente a correção
-4. Para nós segurança é um tema sério, implemente as ações que achar prudente para garantir a segurança da sua aplicação
-5. Utilizando o Angular, crie uma aplicação web  que consuma todos os metodos da API de clientes
+1. **Clone o repositório:**
+   ```bash
+   git clone https://github.com/MichaelCX77/case-digital-assets.git
+   cd case-digital-assets/backend
+   ```
 
-Após finalizar o case, envie o todo o código fonte e o desenho de solução em um arquivo zipado para os e-mails andre_gattini@hotmail.com e andre.gattini@itau-unibanco.com.br
+2. **Instale as dependências:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure variáveis de ambiente:**
+   - Crie um arquivo `.env` na pasta `backend` baseado em `.env.example` (se existir):
+     ```bash
+     cp .env.example .env
+     ```
+   - Preencha com os dados (principalmente da conexão com o banco).
+
+4. **Configure o banco de dados:**
+   - Prefira rodar um PostgreSQL local (via Docker ou manual).
+   - Exemplo com Docker:
+     ```bash
+     docker run --name case_postgres -e POSTGRES_PASSWORD=senha -e POSTGRES_USER=usuario -e POSTGRES_DB=case_db -p 5432:5432 -d postgres
+     ```
+   - Ajuste a `DATABASE_URL` no `.env`:
+     ```
+     DATABASE_URL="postgresql://usuario:senha@localhost:5432/case_db"
+     ```
+
+5. **Migrate e gere o schema do Prisma:**
+   ```bash
+   npm run migrate:dev
+   npx prisma generate
+   ```
+
+## Rodando o Projeto
+
+```bash
+# Desenvolvimento com hot reload:
+npm run start:dev
+
+# Produção:
+npm run build
+npm run start:prod
+
+# Rodar testes:
+npm run test
+```
+
+## Scripts úteis
+
+- **Formatar código:** `npm run format`
+- **Lint:** `npm run lint`
+- **Testes unitários:** `npm run test`
+- **Testes E2E:** `npm run test:e2e`
+
+## Estrutura
+
+- `src/` — Código principal
+- `prisma/` — Schema do banco e migrations
+- `test/` — Testes unitários e e2e
+
+## Observações
+
+- Certifique-se que o banco esteja rodando antes de iniciar o backend.
+- Para mais detalhes e endpoints, consulte a documentação interna do projeto.
+
+---
+
+> Projeto desenvolvido para o Case Consignado
