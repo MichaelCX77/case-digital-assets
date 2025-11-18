@@ -7,7 +7,9 @@ import { AppService } from './app.service';
 import { APP_GUARD } from '@nestjs/core';
 import { GatewayGuard } from './guards/gateway.guard';
 import { UserModule } from './user/user.module';
+import { AccountModule } from './account/account.module';
 import { ContentTypeMiddleware } from './common/middleware/content-type.middleware';
+import { AccountTypeModule } from './account-type/account-type.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { ContentTypeMiddleware } from './common/middleware/content-type.middlewa
     PrismaModule,
     AuthModule,
     UserModule,
+    AccountModule,
+    AccountTypeModule
   ],
   controllers: [AppController],
   providers: [

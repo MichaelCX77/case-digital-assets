@@ -42,13 +42,29 @@ routes:
       public: false
 
   accounts:
-    - path: /my-accounts
+    - path: /accounts
       method: GET
-      roles: ["OWNER", "OPERATOR", "ADMIN"]
+      roles: ["ADMIN", "OPERATOR"]
       public: false
-    - path: /accounts/*
-      method: ALL
-      roles: ["ADMIN"]
+    - path: /accounts
+      method: POST
+      roles: ["ADMIN", "OPERATOR"]
+      public: false
+    - path: /accounts/:id
+      method: GET
+      roles: ["ADMIN", "OPERATOR"]
+      public: false
+    - path: /accounts/:id/users
+      method: GET
+      roles: ["ADMIN", "OPERATOR"]
+      public: false
+    - path: /accounts/:id/users
+      method: POST
+      roles: ["ADMIN", "OPERATOR"]
+      public: false
+    - path: /accounts/:id
+      method: PUT
+      roles: ["ADMIN", "OPERATOR"]
       public: false
 
   transactions:
@@ -59,4 +75,27 @@ routes:
     - path: /transactions/*
       method: ALL
       roles: ["OPERATOR", "ADMIN"]
+      public: false
+    - path: /accounts/:id/users/:userId
+      method: DELETE
+      roles: ["ADMIN"]
+      public: false
+
+
+  accountTypes:
+    - path: /account-types
+      method: GET
+      roles: ["ADMIN"]
+      public: false
+    - path: /account-types
+      method: POST
+      roles: ["ADMIN"]
+      public: false
+    - path: /account-types/:id
+      method: GET
+      roles: ["ADMIN"]
+      public: false
+    - path: /account-types/:id
+      method: DELETE
+      roles: ["ADMIN"]
       public: false

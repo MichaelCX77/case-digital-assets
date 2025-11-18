@@ -29,11 +29,29 @@ model User {
 }
 
 //
+// ACCOUNT TYPE
+//
+model AccountType {
+  id          String   @id @default(uuid()) @map("id_account_type")
+  name        String   @unique @map("name")
+  description String   @map("description")
+  accounts    Account[]
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("account_type")
+}
+
+//
 // ACCOUNT
 //
 model Account {
   idAccount     String         @id @default(uuid()) @map("id_account")
   balance       Float          @default(0) @map("balance")
+  accountTypeId String         @map("account_type_id")
+  accountType   AccountType    @relation(fields: [accountTypeId], references: [id])
+  status        String         @default("ACTIVE") @map("status")               // <-- NOVO CAMPO
 
   users         UserAccount[]
   transactions  Transaction[]
@@ -43,7 +61,6 @@ model Account {
 
   @@map("account")
 }
-
 //
 // USER ↔ ACCOUNT (N:N)
 //
@@ -87,13 +104,14 @@ model Transaction {
 // ROLES
 //
 model Role {
-  id        String @id @default(uuid()) @map("id")
-  name      String @unique @map("name")
+  id          String   @id @default(uuid()) @map("id")
+  name        String   @unique @map("name")
+  description String   @map("description")
 
-  users     User[]
+  users       User[]
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("role")
 }

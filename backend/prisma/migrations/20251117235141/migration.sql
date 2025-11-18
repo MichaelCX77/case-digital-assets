@@ -11,11 +11,23 @@ CREATE TABLE "user" (
 );
 
 -- CreateTable
+CREATE TABLE "account_type" (
+    "id_account_type" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" DATETIME NOT NULL
+);
+
+-- CreateTable
 CREATE TABLE "account" (
     "id_account" TEXT NOT NULL PRIMARY KEY,
     "balance" REAL NOT NULL DEFAULT 0,
+    "account_type_id" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'ACTIVE',
     "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" DATETIME NOT NULL
+    "updated_at" DATETIME NOT NULL,
+    CONSTRAINT "account_account_type_id_fkey" FOREIGN KEY ("account_type_id") REFERENCES "account_type" ("id_account_type") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -50,12 +62,16 @@ CREATE TABLE "transaction" (
 CREATE TABLE "role" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
     "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" DATETIME NOT NULL
 );
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "account_type_name_key" ON "account_type"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "role_name_key" ON "role"("name");
