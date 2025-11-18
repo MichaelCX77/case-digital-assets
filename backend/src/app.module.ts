@@ -13,6 +13,10 @@ import { AccountTypeModule } from './account-type/account-type.module';
 import { RoleModule } from './role/role.module';
 import { TransactionModule } from './transaction/transaction.module';
 
+/**
+ * Main application module.
+ * Registers global config, core modules, controllers, guards, and middleware.
+ */
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -34,6 +38,9 @@ import { TransactionModule } from './transaction/transaction.module';
   ],
 })
 export class AppModule implements NestModule {
+  /**
+   * Configure custom middleware (ContentTypeMiddleware for all routes).
+   */
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(ContentTypeMiddleware)
