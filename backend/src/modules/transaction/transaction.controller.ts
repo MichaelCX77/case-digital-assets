@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Body, HttpCode, Query } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, HttpCode, Query, Inject } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody, ApiQuery, ApiParam } from '@nestjs/swagger';
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
@@ -12,7 +12,9 @@ import { TransactionResponseDto } from './dto/transaction-response.dto';
 @ApiBearerAuth()
 @Controller('transactions')
 export class TransactionController {
-  constructor(private readonly service: TransactionService) {}
+  constructor(
+    private readonly service: TransactionService
+  ) {}
 
   /**
    * List all transactions, optionally filtered by accountId.
