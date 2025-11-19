@@ -31,21 +31,21 @@ export class TransactionController {
   }
 
   /**
-   * Get a specific transaction by its idTransaction and type.
-   * @param idTransaction - Transaction UUID.
+   * Get a specific transaction by its transactionId and type.
+   * @param transactionId - Transaction UUID.
    * @param type - Transaction type (DEPOSIT, WITHDRAW, TRANSFER_IN, TRANSFER_OUT).
    * @returns TransactionResponseDto.
    */
-  @Get(':idTransaction/:type')
-  @ApiOperation({ summary: 'Get a transaction by idTransaction and type' })
-  @ApiParam({ name: 'idTransaction', type: String })
+  @Get(':transactionId/:type')
+  @ApiOperation({ summary: 'Get a transaction by transactionId and type' })
+  @ApiParam({ name: 'transactionId', type: String })
   @ApiParam({ name: 'type', type: String })
   @ApiResponse({ status: 200, type: TransactionResponseDto })
   async getById(
-    @Param('idTransaction') idTransaction: string,
+    @Param('transactionId') transactionId: string,
     @Param('type') type: string,
   ) {
-    const transaction = await this.service.getTransactionByIdAndType(idTransaction, type);
+    const transaction = await this.service.getTransactionByIdAndType(transactionId, type);
     return new TransactionResponseDto(transaction);
   }
 

@@ -4,6 +4,7 @@
  * - Provides Winston structured logging and health check integration.
  * - Sets global authorization guard and logging interceptor.
  * - Modularizes user, account, role, transaction, and authentication features.
+ * - Registers global BrazilDateInterceptor to convert all outgoing dates to Brazil timezone.
  */
 import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -25,6 +26,7 @@ import { createWinstonLogger } from './common/logger/winston-logger';
 import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware';
 import { LoggingInterceptor } from './common/interceptors/logging-interceptor';
 import { TransactionIdMiddleware } from './common/middleware/transaction-id.meddleware'; // corrigido: 'meddleware' -> 'middleware'
+import { BrazilDateInterceptor } from './common/interceptors/date-time.interceptor';
 
 @Module({
   imports: [
@@ -49,6 +51,10 @@ import { TransactionIdMiddleware } from './common/middleware/transaction-id.medd
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: BrazilDateInterceptor, // Interceptor global: converte datas para fuso brasileiro
     },
   ],
 })

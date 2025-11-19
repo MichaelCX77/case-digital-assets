@@ -7,6 +7,7 @@ import { Injectable, NestMiddleware, Inject, BadRequestException } from '@nestjs
 import { Request, Response, NextFunction } from 'express';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import type { LoggerService } from '@nestjs/common';
+import { getIsoDate } from '../utils/date.utils';
 
 @Injectable()
 export class CorrelationIdMiddleware implements NestMiddleware {
@@ -39,7 +40,7 @@ export class CorrelationIdMiddleware implements NestMiddleware {
         url: originalUrl,
         statusCode: 400,
         correlationId: undefined,
-        timestamp: new Date().toISOString(),
+        timestamp: getIsoDate(),
       });
 
       throw new BadRequestException(

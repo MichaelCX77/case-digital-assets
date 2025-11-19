@@ -14,6 +14,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ValidationPipe } from '@nestjs/common';
 import rateLimit from 'express-rate-limit';
+import { getIsoDate } from './common/utils/date.utils';
 
 const RATE_LIMIT_WINDOW_MS =
   Number(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000; // default: 15 minutes
@@ -75,7 +76,7 @@ async function bootstrap() {
     level: 'info',
     message:
       'ValidationPipe, Global HttpExceptionFilter, rate limit middleware and CORS applied',
-    timestamp: new Date().toISOString(),
+    timestamp: getIsoDate(),
   });
 
   // Start application and log startup
@@ -85,13 +86,13 @@ async function bootstrap() {
   logger.log({
     level: 'info',
     message: `Application started on port ${port}`,
-    timestamp: new Date().toISOString(),
+    timestamp: getIsoDate(),
   });
 
   logger.log({
     level: 'info',
     message: `Swagger available at /${process.env.SWAGGER_PATH || 'api'}`,
-    timestamp: new Date().toISOString(),
+    timestamp: getIsoDate(),
   });
 }
 

@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { ISeeder } from './core/ISeeder';
 import { randomUUID } from 'crypto';
+import { getIsoDate } from '../../src/common/utils/date.utils';
 
 /**
  * Seeder: creates an initial DEPOSIT transaction for demo/testing.
@@ -19,14 +20,14 @@ export class TransactionSeeder implements ISeeder {
 
     await prisma.transaction.create({
       data: {
-        idTransaction: randomUUID(),
+        transactionId: randomUUID(),
         destinationAccountId: account.idAccount,
         type: 'DEPOSIT',
         amount: 500,
         balanceBefore: account.balance,
         balanceAfter: account.balance + 500,
         operatorUserId: user.id,
-        timestamp: new Date(),
+        timestamp: getIsoDate(),
         visibleToAccountId: account.idAccount, // Required backend-only field
       },
     });

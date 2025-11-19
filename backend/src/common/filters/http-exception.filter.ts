@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 import { Request, Response } from 'express';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
+import { getIsoDate } from '../utils/date.utils';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -71,7 +72,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       level: "error",
       statusCode,
       message,
-      timestamp: new Date().toISOString(),
+      timestamp: getIsoDate(),
       stack: exception?.stack,
       code,
       detail,
@@ -80,7 +81,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     // Response for client
     const errorResponse: any = {
       message,
-      timestamp: new Date().toISOString(),
+      timestamp: getIsoDate(),
     };
     if (code) errorResponse.code = code;
     if (detail && typeof detail === 'object') errorResponse.detail = detail;
