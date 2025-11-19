@@ -4,11 +4,16 @@ import { CreateAccountDto } from './dto/create-account.dto';
 import { AccountLinkUserDto } from '../user-account/dto/account-link-user.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { AccountResponseDto } from './dto/account-response.dto';
+ import { accountsResponseExample, accountByIdResponseExample, accountUsersResponseExample } from './swagger/account.swagger-example';
+import { ApiResponse } from '@nestjs/swagger';
+import { UserResponseDto } from '../user/dto/user-response.dto';
 
 /**
  * Controller handling account-related operations.
  * Responsible for assembling output DTOs from the raw models returned by AccountService.
  */
+
+
 @Controller('accounts')
 export class AccountController {
   constructor(private readonly service: AccountService) {}
@@ -17,6 +22,17 @@ export class AccountController {
    * Returns a list of all accounts.
    * @returns Array of AccountResponseDto
    */
+  @ApiResponse({
+    status: 200,
+    type: [AccountResponseDto],
+    description: 'Array of accounts',
+    examples: {
+      example: {
+        summary: 'Example response',
+        value: accountsResponseExample,
+      }
+    }
+  })
   @Get()
   @HttpCode(200)
   async findAll() {
@@ -41,6 +57,17 @@ export class AccountController {
    * @param id Unique identifier of the account.
    * @returns AccountResponseDto
    */
+  @ApiResponse({
+    status: 200,
+    type: AccountResponseDto,
+    description: 'Account details',
+    examples: {
+      example: {
+        summary: 'Example response',
+        value: accountByIdResponseExample,
+      }
+    }
+  })
   @Get(':id')
   @HttpCode(200)
   async getById(@Param('id') id: string) {
@@ -53,6 +80,17 @@ export class AccountController {
    * @param id Unique identifier of the account.
    * @returns Array of plain user details
    */
+  @ApiResponse({
+    status: 200,
+    description: 'Array of users linked to the account',
+    type: [UserResponseDto], // Ou o tipo correto do DTO do usuário
+    examples: {
+      example: {
+        summary: 'Example response',
+        value: accountUsersResponseExample,
+      }
+    }
+  })
   @Get(':id/users')
   @HttpCode(200)
   async getUsers(@Param('id') id: string) {
