@@ -1,69 +1,106 @@
 /**
- * Handles exceptions globally for HTTP and Prisma errors, 
- * providing structured API error responses. Prisma foreign key 
- * constraint errors (code P2003) get special handling with a 
- * user-friendly message.
+ * Handles exceptions globally for HTTP and Prisma errors,
+ * providing structured API error responses and logging each exception once
+ * with Winston using the established log format.
  */
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, Inject } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { Request, Response } from 'express';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
-  /**
-   * Transforms thrown exceptions into standardized error responses.
-   * @param exception Error object thrown during request handling
-   * @param host Execution context with HTTP request-response objects
-   */
+  constructor(
+    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: Logger,
+  ) {}
+
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse();
+    // Tipo extendido para acessar .transactionId do middleware
+    const req = ctx.getRequest<Request & { transactionId?: string }>();
+    const res = ctx.getResponse<Response>();
 
-    // Handle Prisma foreign key errors (code P2003)
+    // Contextual info: busca primeiro de req.transactionId, depois do header
+    const correlationId = req.headers['correlation-id'] || req.headers['x-correlation-id'] || undefined;
+    const userId = (req.user as any)?.userId;
+    const method = req.method;
+    const url = req.url;
+    const transactionId = req.transactionId ?? undefined;
+
+    let statusCode = exception instanceof HttpException
+      ? exception.getStatus()
+      : exception.status || 500;
+
+    let code: string | undefined;
+    let message: string;
+    let detail: unknown = undefined;
+
+    // Prisma P2003 (FK constraint) treatment
     if (
       exception instanceof Prisma.PrismaClientKnownRequestError &&
       exception.code === 'P2003'
     ) {
-      return response.status(400).json({
-        message: "Invalid reference: Provided data doesn't exist in related records (e.g. roleId).",
-        code: exception.code,
-        time: new Date().toISOString(),
-      });
+      const field = exception?.meta?.field_name;
+      const model = exception?.meta?.model;
+      message = field && model
+        ? `O valor informado para '${field}' não existe na tabela '${model}'.`
+        : field
+          ? `O valor informado para '${field}' é inválido ou não faz referência a um registro existente.`
+          : "Foi enviado um dado relacionado inválido. Verifique se os IDs enviados realmente existem.";
+      code = exception.code;
+    } else {
+      // Other HTTP/unexpected errors
+      let responseBody = exception instanceof HttpException
+        ? exception.getResponse()
+        : { message: exception.message || 'Internal server error' };
+
+      message = typeof responseBody === 'object' && responseBody !== null && 'message' in responseBody
+        ? String((responseBody as any).message)
+        : typeof responseBody === 'string'
+          ? responseBody
+          : "Internal server error";
+
+      detail = typeof responseBody === 'object' && responseBody !== null && 'detail' in responseBody
+        ? responseBody.detail
+        : undefined;
+
+      if (typeof message === "string") {
+        message = message.replace(/"/g, "'");
+      }
     }
 
-    const status = exception instanceof HttpException
-      ? exception.getStatus()
-      : 500;
-
-    let responseBody = exception instanceof HttpException
-      ? exception.getResponse()
-      : { message: exception.message || 'Internal server error' };
-
-    let message = typeof responseBody === 'object' && responseBody !== null && 'message' in responseBody
-      ? responseBody.message
-      : typeof responseBody === 'string'
-        ? responseBody
-        : "Internal server error";
-
-    let detail = typeof responseBody === 'object' && responseBody !== null && 'detail' in responseBody
-      ? responseBody.detail
-      : undefined;
-
-    // Normalize quotes in error messages
-    if (typeof message === "string") {
-      message = message.replace(/"/g, "'");
+    // Force "Internal server error" for status 500
+    if (statusCode === 500) {
+      message = "Internal server error";
     }
 
-    const baseResponse: any = {
+    // Structured log, one per exception
+    this.logger.log({
+      correlationId: correlationId ?? "N/A",
+      method: method ?? "N/A",
+      transactionId: transactionId ?? "N/A",
+      url: url ?? "N/A",
+      userId: userId ?? "anonymous",
+      level: "error",
+      statusCode,
       message,
-      time: new Date().toISOString(),
+      timestamp: new Date().toISOString(),
+      stack: exception?.stack,
+      code,
+      detail,
+    });
+
+    // Response for client
+    const errorResponse: any = {
+      message,
+      timestamp: new Date().toISOString(),
     };
+    if (code) errorResponse.code = code;
+    if (detail && typeof detail === 'object') errorResponse.detail = detail;
 
-    if (detail && typeof detail === 'object') {
-      baseResponse.detail = detail;
-    }
-
-    if (!response.headersSent) {
-      response.status(status).json(baseResponse);
+    if (!res.headersSent) {
+      res.status(statusCode).json(errorResponse);
     }
   }
 }
