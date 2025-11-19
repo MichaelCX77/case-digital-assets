@@ -3,6 +3,7 @@ import { TransactionRepository } from '../transaction.repository';
 import { AccountRepository } from '../../account/account.repository';
 import type { TransferFlow } from '../interfaces/transaction-flow.interface';
 import { TransactionTypeEffective } from '../enums/transaction-type.enum';
+import { getIsoDate } from 'src/common/utils/date.utils';
 
 /**
  * Service handling money transfers between accounts.
@@ -100,7 +101,7 @@ export class TransferFlowService implements TransferFlow {
       balanceBefore: sourceAccount.balance,
       balanceAfter: balanceAfterSource,
       operatorUserId: dto.operatorUserId,
-      timestamp: new Date(),
+      timestamp: getIsoDate(),
       visibleToAccountId: dto.sourceAccountId,
     });
   }
@@ -120,7 +121,7 @@ export class TransferFlowService implements TransferFlow {
       balanceBefore: destAccount.balance,
       balanceAfter: balanceAfterDest,
       operatorUserId: dto.operatorUserId,
-      timestamp: new Date(),
+      timestamp: getIsoDate(),
       visibleToAccountId: dto.destinationAccountId,
     });
   }

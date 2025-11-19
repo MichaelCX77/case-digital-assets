@@ -2,6 +2,7 @@ import { Injectable, BadRequestException, ForbiddenException, NotFoundException 
 import { TransactionRepository } from '../transaction.repository';
 import { AccountRepository } from '../../account/account.repository';
 import type { WithdrawFlow } from '../interfaces/transaction-flow.interface';
+import { getIsoDate } from 'src/common/utils/date.utils';
 
 @Injectable()
 export class WithdrawFlowService implements WithdrawFlow {
@@ -66,7 +67,7 @@ export class WithdrawFlowService implements WithdrawFlow {
       balanceBefore: account.balance,
       balanceAfter,
       operatorUserId: dto.operatorUserId,
-      timestamp: new Date(),
+      timestamp: getIsoDate(),
       visibleToAccountId: dto.sourceAccountId,
     });
   }

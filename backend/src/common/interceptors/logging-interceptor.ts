@@ -13,6 +13,7 @@ import {
 import { Observable, tap } from 'rxjs';
 import type { LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { getIsoDate } from '../utils/date.utils';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
@@ -48,7 +49,7 @@ export class LoggingInterceptor implements NestInterceptor {
       transactionId,
       method,
       url: originalUrl,
-      timestamp: new Date().toISOString(),
+      timestamp: getIsoDate(),
       userId,
     });
 
@@ -72,7 +73,7 @@ export class LoggingInterceptor implements NestInterceptor {
           transactionId,
           method,
           url: originalUrl,
-          timestamp: new Date().toISOString(),
+          timestamp: getIsoDate(),
           statusCode: context.switchToHttp().getResponse().statusCode,
           elapsed,
           userId,
