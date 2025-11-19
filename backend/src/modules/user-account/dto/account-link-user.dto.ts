@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 /**
  * DTO for relating a user to an account.
  */
-export class AccountUserDto {
+export class AccountLinkUserDto {
   /**
    * Unique identifier of the user.
    */

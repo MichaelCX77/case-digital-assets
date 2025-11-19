@@ -2,11 +2,11 @@ import { Injectable, NotFoundException, BadRequestException, ConflictException }
 import { AccountTypeRepository } from './account-type.repository';
 import { CreateAccountTypeDto } from './dto/create-account-type.dto';
 import { UpdateAccountTypeDto } from './dto/update-account-type.dto';
-import { AccountTypeResponseDto } from './dto/account-type-response.dto';
 import { Prisma } from '@prisma/client';
 
 /**
  * Service providing business logic and operations for account types.
+ * Returns raw account type models; controllers are responsible for assembling DTOs for API output.
  */
 @Injectable()
 export class AccountTypeService {
@@ -14,11 +14,10 @@ export class AccountTypeService {
 
   /**
    * Lists all account types.
-   * @returns Array of account type response DTOs.
+   * @returns Array of account type models.
    */
-  async listAccountTypes(): Promise<AccountTypeResponseDto[]> {
-    const types = await this.repo.findAll();
-    return types.map(t => new AccountTypeResponseDto(t));
+  async listAccountTypes() {
+    return this.repo.findAll();
   }
 
   /**
@@ -54,17 +53,16 @@ export class AccountTypeService {
   /**
    * Creates a new account type.
    * @param data DTO containing account type creation data.
-   * @returns Account type response DTO.
+   * @returns Account type model.
    * @throws BadRequestException if required fields are missing or invalid.
    * @throws ConflictException if account type name already exists.
    */
-  async createAccountType(data: CreateAccountTypeDto): Promise<AccountTypeResponseDto> {
+  async createAccountType(data: CreateAccountTypeDto) {
     if (!data.name) throw new BadRequestException('Account type name required');
     if (!data.description) throw new BadRequestException('Account type description required');
     const name = this.normalizeAndValidateName(data.name)!;
     try {
-      const type = await this.repo.create({ name, description: data.description });
-      return new AccountTypeResponseDto(type);
+      return await this.repo.create({ name, description: data.description });
     } catch (err) {
       if (this.isNameUniqueError(err)) {
         throw new ConflictException(`Account type name "${name}" already exists.`);
@@ -76,25 +74,25 @@ export class AccountTypeService {
   /**
    * Gets account type details by ID.
    * @param id Unique identifier of the account type.
-   * @returns Account type response DTO.
+   * @returns Account type model.
    * @throws NotFoundException if account type not found.
    */
-  async getAccountType(id: string): Promise<AccountTypeResponseDto> {
+  async getAccountType(id: string) {
     const type = await this.repo.findById(id);
     if (!type) throw new NotFoundException('AccountType not found');
-    return new AccountTypeResponseDto(type);
+    return type;
   }
 
   /**
    * Updates account type fields.
    * @param id Unique identifier of the account type.
    * @param data DTO with fields to update.
-   * @returns Updated account type response DTO.
+   * @returns Updated account type model.
    * @throws NotFoundException if account type not found.
    * @throws BadRequestException if no fields are provided.
    * @throws ConflictException if name already exists.
    */
-  async updateAccountType(id: string, data: UpdateAccountTypeDto): Promise<AccountTypeResponseDto> {
+  async updateAccountType(id: string, data: UpdateAccountTypeDto) {
     const type = await this.repo.findById(id);
     if (!type) throw new NotFoundException('AccountType not found');
     let name: string | undefined;
@@ -105,11 +103,10 @@ export class AccountTypeService {
       throw new BadRequestException('At least one field (name or description) must be provided for update');
     }
     try {
-      const updated = await this.repo.update(id, {
+      return await this.repo.update(id, {
         ...(name ? { name } : {}),
         ...(data.description ? { description: data.description } : {}),
       });
-      return new AccountTypeResponseDto(updated);
     } catch (err) {
       if (this.isNameUniqueError(err)) {
         throw new ConflictException(`Account type name "${data.name?.toUpperCase()}" already exists.`);

@@ -1,63 +1,70 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserResponseDto } from './dto/user-response.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { LinkAccountDto } from './dto/link-account.dto';
+import { UserLinkAccountDto } from '../user-account/dto/user-link-account.dto';
+import { RoleRepository } from '../role/role.repository';
 
 /**
  * Service for handling business logic related to users.
+ * Returns raw user models. Controller is responsible for assembling response DTOs.
  */
 @Injectable()
 export class UserService {
-  constructor(private readonly repo: UserRepository) {}
+  constructor(
+    private readonly repo: UserRepository,
+    private readonly roleRepo: RoleRepository
+  ) {}
 
   /**
    * Returns all users.
-   * @returns Array of UserResponseDto.
+   * @returns Array of user models.
    */
-  async listUsers(): Promise<UserResponseDto[]> {
-    const users = await this.repo.findAll();
-    return users.map(u => new UserResponseDto(u));
+  async listUsers() {
+    return this.repo.findAll();
   }
 
   /**
-   * Create a new user.
+   * Creates a new user.
    * @param data - Data for creation.
-   * @returns Created UserResponseDto.
-   * @throws BadRequestException if data not received or email already registered.
+   * @returns User model.
+   * @throws BadRequestException if data not received, email already registered or roleId does not exist.
    */
-  async create(data: CreateUserDto): Promise<UserResponseDto> {
+  async create(data: CreateUserDto) {
     if (!data) throw new BadRequestException("Data not received!");
+
     const exists = await this.repo.findByEmail(data.email);
     if (exists) throw new BadRequestException("Email already registered");
-    const user = await this.repo.create(data);
-    return new UserResponseDto(user);
+
+    const roleExists = await this.roleRepo.roleExists(data.roleId);
+    if (!roleExists) throw new BadRequestException("Provided roleId does not exist!");
+
+    return this.repo.create(data);
   }
 
   /**
-   * Get a user by their ID.
+   * Gets a user by their ID.
    * @param id - User identifier.
-   * @returns UserResponseDto.
+   * @returns User model.
    * @throws NotFoundException if user not found.
    */
-  async getUser(id: string): Promise<UserResponseDto> {
+  async getUser(id: string) {
     const user = await this.repo.findById(id);
     if (!user) throw new NotFoundException("User not found");
-    return new UserResponseDto(user);
+    return user;
   }
 
   /**
-   * Update a user by their ID.
+   * Updates a user by their ID.
    * @param id - User identifier.
    * @param data - Update data.
-   * @returns Updated UserResponseDto.
-   * @throws BadRequestException if email already registered (to another user).
+   * @returns Updated user model.
+   * @throws BadRequestException if email already registered (to another user) or roleId does not exist.
    */
-  async update(id: string, data: UpdateUserDto): Promise<UserResponseDto> {
-    await this.getUser(id); // check existence
+  async update(id: string, data: UpdateUserDto) {
+    await this.getUser(id); // Check existence
 
-    // Validate email uniqueness if it's being updated
+    // Email uniqueness validation
     if (data.email) {
       const existingUser = await this.repo.findByEmail(data.email);
       if (existingUser && existingUser.id !== id) {
@@ -65,46 +72,51 @@ export class UserService {
       }
     }
 
-    const user = await this.repo.update(id, data);
-    return new UserResponseDto(user);
+    // Role existence validation (if updating role)
+    if (data.roleId) {
+      const roleExists = await this.roleRepo.roleExists(data.roleId);
+      if (!roleExists) throw new BadRequestException("Provided roleId does not exist!");
+    }
+
+    return this.repo.update(id, data);
   }
 
   /**
-   * Delete a user by ID.
+   * Deletes a user by ID.
    * @param id - User identifier.
-   * @returns Deleted UserResponseDto (old record).
+   * @returns Deleted user model (previous record).
    */
-  async delete(id: string): Promise<UserResponseDto> {
-    const user = await this.getUser(id); // return the old record before deletion
+  async delete(id: string) {
+    const user = await this.getUser(id); // Get record before deletion
     await this.repo.delete(id);
     return user;
   }
 
   /**
-   * Get all accounts linked to a user.
+   * Returns all accounts linked to a given user.
    * @param userId - User identifier.
    * @returns Array of accounts.
    * @throws NotFoundException if user not found.
    */
-  async accounts(userId: string): Promise<any[]> {
-    await this.getUser(userId); // check existence
+  async accounts(userId: string) {
+    await this.getUser(userId); // Check existence
     return this.repo.listAccounts(userId);
   }
 
   /**
-   * Link an account to a user.
+   * Links an account to a user.
    * @param userId - User identifier.
    * @param dto - Account link data.
    * @returns Link record.
    * @throws NotFoundException if user not found.
    */
-  async linkAccount(userId: string, dto: LinkAccountDto): Promise<any> {
+  async linkAccount(userId: string, dto: UserLinkAccountDto) {
     await this.getUser(userId);
     return this.repo.linkAccount(userId, dto.accountId);
   }
 
   /**
-   * Get role names for a user by email.
+   * Gets role names for a user by email.
    * @param email - User email.
    * @returns Array containing the role name if found.
    */
@@ -113,6 +125,11 @@ export class UserService {
     return roleName ? [roleName] : [];
   }
 
+  /**
+   * Gets role names for a user by ID.
+   * @param id - User identifier.
+   * @returns Array containing the role name if found.
+   */
   async getRoleNamesById(id: string): Promise<string[]> {
     const user = await this.repo.findById(id);
     return user?.role ? [user.role.name] : [];

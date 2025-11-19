@@ -2,7 +2,6 @@ import { Injectable, NotFoundException, BadRequestException, ConflictException }
 import { RoleRepository } from './role.repository';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { RoleResponseDto } from './dto/role-response.dto';
 import { Prisma } from '@prisma/client';
 
 /**
@@ -10,15 +9,14 @@ import { Prisma } from '@prisma/client';
  */
 @Injectable()
 export class RoleService {
-  constructor(private readonly repo: RoleRepository) {}
+  constructor(private readonly repo: RoleRepository) { }
 
   /**
    * Returns all roles.
-   * @returns Array of RoleResponseDto
+   * @returns Array of roles
    */
-  async listRoles(): Promise<RoleResponseDto[]> {
-    const roles = await this.repo.findAll();
-    return roles.map(role => new RoleResponseDto(role));
+  async listRoles() {
+    return await this.repo.findAll();
   }
 
   /**
@@ -57,16 +55,15 @@ export class RoleService {
   /**
    * Create a new role.
    * @param data - Data for creation.
-   * @returns Created RoleResponseDto.
+   * @returns Created role object.
    * @throws BadRequestException, ConflictException
    */
-  async createRole(data: CreateRoleDto): Promise<RoleResponseDto> {
+  async createRole(data: CreateRoleDto) {
     if (!data.name) throw new BadRequestException('Role name required');
     if (!data.description) throw new BadRequestException('Role description required');
     const name = this.normalizeAndValidateName(data.name)!;
     try {
-      const role = await this.repo.create({ name, description: data.description });
-      return new RoleResponseDto(role);
+      return await this.repo.create({ name, description: data.description });
     } catch (err) {
       if (this.isNameUniqueError(err)) {
         throw new ConflictException(`Role name "${name}" already exists.`);
@@ -78,23 +75,23 @@ export class RoleService {
   /**
    * Get a role by its ID.
    * @param id - Role identifier.
-   * @returns RoleResponseDto.
+   * @returns role object.
    * @throws NotFoundException
    */
-  async getRole(id: string): Promise<RoleResponseDto> {
+  async getRole(id: string) {
     const role = await this.repo.findById(id);
     if (!role) throw new NotFoundException('Role not found');
-    return new RoleResponseDto(role);
+    return role;
   }
 
   /**
    * Update a role by its ID.
    * @param id - Role identifier.
    * @param data - Update data.
-   * @returns Updated RoleResponseDto.
+   * @returns Updated role object.
    * @throws NotFoundException, BadRequestException, ConflictException
    */
-  async updateRole(id: string, data: UpdateRoleDto): Promise<RoleResponseDto> {
+  async updateRole(id: string, data: UpdateRoleDto) {
     const role = await this.repo.findById(id);
     if (!role) throw new NotFoundException('Role not found');
     let name: string | undefined;
@@ -105,17 +102,26 @@ export class RoleService {
       throw new BadRequestException('At least one field (name or description) must be provided for update');
     }
     try {
-      const updated = await this.repo.update(id, {
+      return await this.repo.update(id, {
         ...(name ? { name } : {}),
         ...(data.description ? { description: data.description } : {}),
       });
-      return new RoleResponseDto(updated);
     } catch (err) {
       if (this.isNameUniqueError(err)) {
         throw new ConflictException(`Role name "${data.name?.toUpperCase()}" already exists.`);
       }
       throw err;
     }
+  }
+
+  /**
+   * Asserts that a role exists by its ID.
+   * Throws BadRequestException if not found.
+   * @param roleId - Role identifier.
+   */
+  async assertRoleExists(roleId: string): Promise<void> {
+    const exists = await this.repo.roleExists(roleId);
+    if (!exists) throw new BadRequestException("Provided roleId does not exist!");
   }
 
   /**

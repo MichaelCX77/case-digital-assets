@@ -15,6 +15,6 @@ import { PrismaModule } from '../prisma/prisma.module';
   imports: [PrismaModule, AccountModule],
   controllers: [TransactionController],
   providers: [TransactionService, TransactionRepository],
-  exports: [TransactionService]
+  exports: [TransactionRepository]
 })
 export class TransactionModule {}

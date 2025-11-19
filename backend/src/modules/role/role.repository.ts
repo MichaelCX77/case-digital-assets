@@ -22,6 +22,16 @@ export class RoleRepository {
   async create(data: { name: string; description: string }) {
     return this.prisma.role.create({ data });
   }
+  
+  /**
+   * Checks whether a role exists by its ID.
+   * @param roleId - Role identifier.
+   * @returns True if the role exists, false otherwise.
+   */
+  async roleExists(roleId: string): Promise<boolean> {
+    const role = await this.prisma.role.findUnique({ where: { id: roleId } });
+    return !!role;
+  }
 
   /**
    * Find a role by its ID.

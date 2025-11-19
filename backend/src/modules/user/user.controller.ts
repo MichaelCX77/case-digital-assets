@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, HttpCode } from '@nestjs/common';
 import { UserService } from './user.service';
-import { LinkAccountDto } from './dto/link-account.dto';
+import { UserLinkAccountDto } from '../user-account/dto/user-link-account.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
@@ -102,9 +102,9 @@ export class UserController {
   @Post(':id/accounts')
   @HttpCode(201)
   @ApiOperation({ summary: 'Link account to user' })
-  @ApiBody({ type: LinkAccountDto })
+  @ApiBody({ type: UserLinkAccountDto })
   @ApiResponse({ status: 201 })
-  async linkAccount(@Param('id') id: string, @Body() body: LinkAccountDto) {
+  async linkAccount(@Param('id') id: string, @Body() body: UserLinkAccountDto) {
     return this.service.linkAccount(id, body);
   }
 }

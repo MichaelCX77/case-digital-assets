@@ -6,6 +6,7 @@ import { TransactionResponseDto } from './dto/transaction-response.dto';
 
 /**
  * Controller for handling transaction-related endpoints.
+ * É responsável por montar os DTOs de saída (TransactionResponseDto).
  */
 @ApiTags('Transactions')
 @ApiBearerAuth()
@@ -22,23 +23,28 @@ export class TransactionController {
   @ApiOperation({ summary: 'List all transactions for an account' })
   @ApiResponse({ status: 200, type: [TransactionResponseDto] })
   async list(@Param('accountId') accountId: string) {
-    return this.service.getTransactions(accountId);
+    const transactions = await this.service.getTransactions(accountId);
+    return transactions.map(tx => new TransactionResponseDto(tx));
   }
 
   /**
-   * Create a transfer transaction from a source account.
+   * Create a transaction for the given account.
+   * Para transferências, os campos "amount", "operatorUserId" e "destinationAccountId" são obrigatórios.
+   * O DTO de saída é montado na controller.
    * @param accountId - ID of the source account.
-   * @param dto - Transfer transaction data.
+   * @param dto - Transaction data.
    * @returns Created TransactionResponseDto.
    */
   @Post()
-  @ApiOperation({ summary: 'Create a transfer from the source account to the destination account' })
+  @ApiOperation({ summary: 'Create a transfer transaction' })
   @ApiBody({ type: CreateTransactionDto })
   @ApiResponse({ status: 201, type: TransactionResponseDto })
+  @HttpCode(201)
   async create(
     @Param('accountId') accountId: string,
     @Body() dto: CreateTransactionDto,
   ) {
-    return this.service.createTransaction(accountId, dto);
+    const transaction = await this.service.createTransaction(accountId, dto);
+    return new TransactionResponseDto(transaction);
   }
 }

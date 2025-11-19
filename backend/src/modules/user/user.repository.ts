@@ -91,7 +91,6 @@ export class UserRepository {
    */
   async delete(id: string) {
     await this.prisma.userAccount.deleteMany({ where: { userId: id } });
-    await this.prisma.transaction.deleteMany({ where: { operatorUserId: id } });
     return this.prisma.user.delete({ where: { id } });
   }
 
