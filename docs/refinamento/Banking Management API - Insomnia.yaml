@@ -11,7 +11,7 @@ collection:
     meta:
       id: req_67ba4fe9626048f492ffe5ce536b0782
       created: 1763463465280
-      modified: 1763463486256
+      modified: 1763508542468
       isPrivate: false
       description: ""
       sortKey: -1763463465280
@@ -19,6 +19,12 @@ collection:
     headers:
       - name: User-Agent
         value: insomnia/12.0.0
+        id: pair_7740e41cf4034a3c9ea13a85c49091ec
+      - id: pair_df122c06137a4556b71267b18b1ee6ba
+        name: correlation-id
+        value: "{{ _.correlation_id }}"
+        description: ""
+        disabled: false
     settings:
       renderRequestBody: true
       encodeUrl: true
@@ -40,19 +46,25 @@ collection:
         meta:
           id: req_34469f8c29b44e36a5e0f31cab5b8e40
           created: 1763293279075
-          modified: 1763414175034
+          modified: 1763572824098
           isPrivate: false
           description: Returns all registered users.
           sortKey: -1763293358463
         method: GET
+        body:
+          mimeType: application/json
+          text: ""
         parameters:
           - name: page
             value: "1"
           - name: size
             value: "10"
         headers:
-          - name: ""
-            value: ""
+          - name: Content-Type
+            value: application/json
+          - name: correlation-id
+            value: "{{ _.correlation_id }}"
+            id: pair_d68819872f704907b0963dc7b0722c1a
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
@@ -71,7 +83,7 @@ collection:
         meta:
           id: req_0cbb24e554db464a9052e642fc3896cd
           created: 1763293279077
-          modified: 1763420097546
+          modified: 1763558552129
           isPrivate: false
           description: Creates a new user.
           sortKey: -1763293358563
@@ -80,14 +92,20 @@ collection:
           mimeType: application/json
           text: |-
             {
-              "name": "Michael Ribeiro",
-              "email": "aaasaa@example.com",
-              "password": "123456",
-              "roleId": "3da01f3e-854c-460b-820e-f31d598cc2b6"
+            	"name": "aaa",
+            	"email": "michas@dsmple.com",
+              "password": "789123",
+              "roleId": "659e98a5-b96b-41a7-a92e-49ae6069b37c"
             }
         headers:
           - name: Content-Type
             value: application/json
+            id: pair_70fa3d1b97654a8b9ed184d98a0af9f1
+          - id: pair_3efd68b1714f4c589c5bcb4f3395d4d3
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
@@ -100,19 +118,20 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ base_url }}/users/b08d8399-5272-4ab6-9694-6af82a2abde1"
+      - url: "{{ base_url }}/users/de58370a-7215-43d5-a95b-edd08b27c464"
         name: Get user by ID
         meta:
           id: req_d30f0eeeffba4d10a0f4a743ffbf1fb3
           created: 1763293279078
-          modified: 1763415360062
+          modified: 1763558500190
           isPrivate: false
           description: Fetch user data by ID.
           sortKey: -1763293358413
         method: GET
         headers:
-          - name: ""
-            value: ""
+          - name: correlation-id
+            value: "{{ _.correlation_id }}"
+            id: pair_c7213e4be14e4b678301cf1c11d00958
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
@@ -126,12 +145,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ base_url }}/users/3ab1caeb-320a-4f8e-86fc-9af08bccc683"
+      - url: "{{ base_url }}/users/dedb4f43-7e95-4b2f-9546-b02e45832d7cc"
         name: Update user
         meta:
           id: req_fd3fc984913b46e5b140acbd3e83f91a
           created: 1763293279079
-          modified: 1763428843935
+          modified: 1763558572583
           isPrivate: false
           description: Updates user's information.
           sortKey: -1763293357963
@@ -141,9 +160,9 @@ collection:
           text: |-
             {
               "name": "Michael 1722",
-              "email": "EIGTH@example.com",
+              "email": "AAA@example.com",
               "password": "NewPassword2025",
-              "roleId": "bf328c11-d09b-4f27-beef-a95da0c2a52a"
+              "roleId": "659e98a5-b96b-41a7-a92e-49ae6069b37c"
             }
         headers:
           - id: pair_6a438792d30244bb952ea93953266c58
@@ -151,32 +170,9 @@ collection:
             value: application/json
             description: ""
             disabled: false
-        authentication:
-          type: bearer
-          token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
-            'b64::JC5hY2Nlc3NfdG9rZW4=::46b', 'never', 60 %}"
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: "{{ base_url }}/users/b08d8399-5272-4ab6-9694-6af82a2abde1"
-        name: Remove user
-        meta:
-          id: req_e1cfa240859a4d6aaeb211da453723e0
-          created: 1763293279080
-          modified: 1763415367828
-          isPrivate: false
-          description: Removes the specified user.
-          sortKey: -1763293357863
-        method: DELETE
-        headers:
-          - id: pair_6133f59d1dfa4d7ca8fd6f1116f2e4ed
-            name: Content-type
-            value: application/json
+          - id: pair_83ca058a9a154c69bd05ebc54b0741d2
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
             description: ""
             disabled: false
         authentication:
@@ -191,40 +187,33 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ base_url }}/users/1/accounts"
-        name: Accounts linked to user
+      - url: "{{ base_url }}/users/dedb4f43-7e95-4b2f-9546-b02e45832d7c"
+        name: Remove user
         meta:
-          id: req_be75aa3eedf8414fbc749b18d92a8827
-          created: 1763293279081
-          modified: 1763293478507
+          id: req_e1cfa240859a4d6aaeb211da453723e0
+          created: 1763293279080
+          modified: 1763523896684
           isPrivate: false
-          description: Lists accounts to which the user is linked.
-          sortKey: -1763293358388
-        method: GET
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: "{{ base_url }}/users/1/accounts"
-        name: Link account to user
-        meta:
-          id: req_f646b551382c4ccf91625436754cf09d
-          created: 1763293279082
-          modified: 1763414401020
-          isPrivate: false
-          description: Links an account to the user.
-          sortKey: -1763293358513
-        method: POST
-        body:
-          mimeType: application/json
-          text: |-
-            {
-              "accountId": 109
-            }
+          description: Removes the specified user.
+          sortKey: -1763293357863
+        method: DELETE
+        parameters:
+          - id: pair_19898600c68142d4b461fbed80e969ba
+            name: correlation-id
+            value: b08d8399-5272-4ab6-9694-6af82a2abde1
+            description: ""
+            disabled: false
+        headers:
+          - id: pair_6133f59d1dfa4d7ca8fd6f1116f2e4ed
+            name: Content-type
+            value: application/json
+            description: ""
+            disabled: false
+          - id: pair_f04acdc346e544d88500c0ca1781e18e
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
@@ -237,16 +226,26 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ base_url }}/accounts/101/users"
-        name: Users linked to account
+      - url: "{{ base_url }}/users/076c5d3d-a4ca-4273-a7ca-8467008d2536/accounts"
+        name: Accounts linked to user
         meta:
-          id: req_7ffccc8acef14988936cf1018aee4d26
-          created: 1763293279096
-          modified: 1763293481591
+          id: req_be75aa3eedf8414fbc749b18d92a8827
+          created: 1763293279081
+          modified: 1763557157144
           isPrivate: false
-          description: Lists users linked to the account.
-          sortKey: -1763293358375.5
+          description: Lists accounts to which the user is linked.
+          sortKey: -1763293358388
         method: GET
+        headers:
+          - id: pair_1346a102204147a1bd0370e2bfca87aa
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
+            'b64::JC5hY2Nlc3NfdG9rZW4=::46b', 'never', 60 %}"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -255,22 +254,31 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ base_url }}/accounts/101/users"
-        name: Link user to account
+      - url: "{{ _.base_url }}/users/076c5d3d-a4ca-4273-a7ca-8467008d2536/accounts"
+        name: Add Account to User
         meta:
-          id: req_69867eb01bf747588c16cbf6363cd323
-          created: 1763293279097
-          modified: 1763414395682
+          id: req_4cc3f37aec184bbdaaf8864f6cfd0ad6
+          created: 1763522610728
+          modified: 1763558514039
           isPrivate: false
-          description: Links a user to the account.
-          sortKey: -1763293358488
+          description: ""
+          sortKey: -1763293358513
         method: POST
         body:
           mimeType: application/json
           text: |-
             {
-              "userId": 1
+            	"accountId": "ceb99182-4480-41d9-bd57-11d8c2546cc0"
             }
+        headers:
+          - name: Content-Type
+            value: application/json
+            id: pair_6275d5bf5d384c0a81553aaac280053a
+          - id: pair_3d51bf1866904d16a7109056f33e144d
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
@@ -287,25 +295,36 @@ collection:
     meta:
       id: fld_3e193d4bbcc445008be0dd285a163722
       created: 1763293337792
-      modified: 1763293337792
-      sortKey: -1763293337792
+      modified: 1763558722746
+      sortKey: -1763359594168.9375
       description: ""
     children:
       - url: "{{ _.base_url
-          }}/accounts/ceba4178-f58b-4859-af84-1bce60994572/transactions"
-        name: List Transactions
+          }}/transactions?accountId=f7d368b2-e51c-4f0d-aa10-bb406a3d19bc"
+        name: List Transactions by Account
         meta:
           id: req_aa49171f660742639902adc29a130b83
           created: 1763430616122
-          modified: 1763433319976
+          modified: 1763573685426
           isPrivate: false
           description: ""
           sortKey: -1763293344521
         method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+          - id: pair_79de2e088a6b427dbc7c308f5eeddd96
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
-            'b64::JC5hY2Nlc3NfdG9rZW4=::46b', 'never', 60 %}"
+            'b64::JC5hY2Nlc3NfdG9rZW4=::46b', 'when-expired', 60 %}"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -314,13 +333,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _.base_url
-          }}/accounts/2dc0f7f5-4f97-49c4-8352-067f0b4ce8c0/transactions"
+      - url: "{{ _.base_url }}/transactions"
         name: Create Transaction - DEPOSIT
         meta:
           id: req_badd55c747f24a0ea8e88acf76af5ca8
           created: 1763430650255
-          modified: 1763431116783
+          modified: 1763573281810
           isPrivate: false
           description: ""
           sortKey: -1763293344621
@@ -331,11 +349,18 @@ collection:
             {
                  "type": "DEPOSIT",
                  "amount": 150.00,
-                 "operatorUserId": "3ab1caeb-320a-4f8e-86fc-9af08bccc683"
-               }
+                 "operatorUserId": "bb1df906-e28d-4d21-abac-36097d5977dc",
+            		 "destinationAccountId": "f7d368b2-e51c-4f0d-aa10-bb406a3d19bc"
+             }
         headers:
           - name: Content-Type
             value: application/json
+            id: pair_283c38c0d8b549cc893c7862f476fcd1
+          - id: pair_d4f3a65bf3a9405eb364f6544ead2b7b
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
@@ -348,28 +373,36 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _.base_url
-          }}/accounts/2dc0f7f5-4f97-49c4-8352-067f0b4ce8c0/transactions"
+      - url: "{{ _.base_url }}/transactions"
         name: Create Transaction - WITHDRAW
         meta:
           id: req_5e7f3c37fabd40818687ba4c2fea5f22
           created: 1763430717416
-          modified: 1763431798929
+          modified: 1763573662451
           isPrivate: false
           description: ""
           sortKey: -1763293344571
         method: POST
         body:
           mimeType: application/json
-          text: |-
+          text: |+
             {
                  "type": "WITHDRAW",
-                 "amount": 500.00,
-                 "operatorUserId": "3ab1caeb-320a-4f8e-86fc-9af08bccc683"
-               }
+                 "amount": 150.00,
+                 "operatorUserId": "bb1df906-e28d-4d21-abac-36097d5977dc",
+            		 "sourceAccountId": "f7d368b2-e51c-4f0d-aa10-bb406a3d19bc"
+            }
+
+
         headers:
           - name: Content-Type
             value: application/json
+            id: pair_c2bdff0527bb4de185fd3b914283bcff
+          - id: pair_a308f0e7e76c47529511007409353218
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
@@ -382,13 +415,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _.base_url
-          }}/accounts/ceba4178-f58b-4859-af84-1bce60994572/transactions"
+      - url: "{{ _.base_url }}/transactions"
         name: Create Transaction - TRANSFER
         meta:
           id: req_7a6692dfce7d4b47bcc405e30fc912e6
           created: 1763430744140
-          modified: 1763433181049
+          modified: 1763572879317
           isPrivate: false
           description: ""
           sortKey: -1763293344546
@@ -399,16 +431,55 @@ collection:
             {
                  "type": "TRANSFER",
                  "amount": 5.00,
-                 "operatorUserId": "37be0881-e0fb-4505-ae6f-9330e8ae1fa0",
-                 "destinationAccountId": "ceba4178-f58b-4859-af84-1bce60994572"
+                 "operatorUserId": "bb1df906-e28d-4d21-abac-36097d5977dc",
+            		 "sourceAccountId": "f7d368b2-e51c-4f0d-aa10-bb406a3d19bc",
+                 "destinationAccountId": "002ed4b8-4445-49f9-9b6e-57ea21bcfb88"
             }
         headers:
           - name: Content-Type
             value: application/json
+            id: pair_bf57ba5891f144e9aaacc13e96040583
+          - id: pair_8412fba043da45a3a633440380a6d9bf
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
-            'b64::JC5hY2Nlc3NfdG9rZW4=::46b', 'never', 60 %}"
+            'b64::JC5hY2Nlc3NfdG9rZW4=::46b', 'when-expired', 60 %}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url
+          }}/transactions/aa37d15e-df67-421d-b3ee-1db2dc8a0385/TRANSFER_IN"
+        name: Get Transaction by Id
+        meta:
+          id: req_0684df102fab4006962f9fae31b5ec70
+          created: 1763574256916
+          modified: 1763574431185
+          isPrivate: false
+          description: ""
+          sortKey: -1763293344421
+        method: GET
+        headers:
+          - name: Content-Type
+            value: application/json
+            id: pair_fa268db5594b452bae9c42081d1df18c
+          - id: pair_2fcab9df567548fabfe47d2be721619f
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
+        authentication:
+          type: bearer
+          token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
+            'b64::JC5hY2Nlc3NfdG9rZW4=::46b', 'when-expired', 60 %}"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -421,8 +492,8 @@ collection:
     meta:
       id: fld_0e8509f3cc2d4df4b7100868adf855d9
       created: 1763293395989
-      modified: 1763428351163
-      sortKey: -1763354502001.25
+      modified: 1763565499989
+      sortKey: -1763358321127.0156
       description: ""
     children:
       - url: "{{ base_url }}/accounts"
@@ -430,21 +501,26 @@ collection:
         meta:
           id: req_ffe1f40508254f3ea3220fa08d18dda9
           created: 1763293279083
-          modified: 1763432275766
+          modified: 1763571054181
           isPrivate: false
           description: Returns all registered accounts.
           sortKey: -1763293400921
         method: GET
+        body:
+          mimeType: application/json
+          text: ""
         headers:
+          - name: Content-Type
+            value: application/json
           - id: pair_2172e8270c7f4b6bb0a511804715d736
-            name: ""
-            value: ""
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
             description: ""
             disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
-            'b64::JC5hY2Nlc3NfdG9rZW4=::46b', 'never', 60 %}"
+            'b64::JC5hY2Nlc3NfdG9rZW4=::46b', 'when-expired', 60 %}"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -458,7 +534,7 @@ collection:
         meta:
           id: req_579fd6f6287a40179c4a7d2064849963
           created: 1763293279084
-          modified: 1763427877693
+          modified: 1763513535147
           isPrivate: false
           description: Creates a new account.
           sortKey: -1763293401121
@@ -467,13 +543,24 @@ collection:
           mimeType: application/json
           text: |-
             {
-            	"userId": "2e47f8f7-16b3-4dd2-9ad1-a9d4d39fc3d6",
-            	"accountTypeId": "f47bd097-b34e-44cf-8488-4aa44ce3ccbf"
+            	"userId": "dedb4f43-7e95-4b2f-9546-b02e45832d7c",
+            	"accountTypeId": "968b27ab-de65-4461-ad75-2bc3d180cb9d"
             }
+        parameters:
+          - id: pair_df8f01f3b3794f588a41c2e12caec83d
+            name: ""
+            value: ""
+            description: ""
+            disabled: false
         headers:
           - id: pair_2a1ca32f3c9a4faa9512682a7bd97520
             name: Content-Type
             value: application/json
+            description: ""
+            disabled: false
+          - id: pair_818a6b90059b4088b05bbcd36f19507c
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
             description: ""
             disabled: false
         authentication:
@@ -488,16 +575,22 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ base_url }}/accounts/836e3b5e-55b9-494f-b290-7e12aaf13dbb"
+      - url: "{{ base_url }}/accounts/ceb99182-4480-41d9-bd57-11d8c2546cc0"
         name: Get account by ID
         meta:
           id: req_784db7dbfd5048d2a788ea60055a9fb4
           created: 1763293279085
-          modified: 1763432104338
+          modified: 1763513681975
           isPrivate: false
           description: Fetch account data by ID.
           sortKey: -1763293400721
         method: GET
+        headers:
+          - id: pair_603edc6017a64f5e8d0c63226d670a4a
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
@@ -510,12 +603,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _.base_url }}/accounts/ceba4178-f58b-4859-af84-1bce60994572/users"
+      - url: "{{ _.base_url }}/accounts/f7d368b2-e51c-4f0d-aa10-bb406a3d19bc/users"
         name: List Users Associated With Account
         meta:
           id: req_82de715f0a1d4239ae6e0999c664cbe4
           created: 1763417013823
-          modified: 1763432946257
+          modified: 1763572796897
           isPrivate: false
           description: ""
           sortKey: -1763293400696
@@ -526,6 +619,12 @@ collection:
         headers:
           - name: Content-Type
             value: application/json
+            id: pair_10459a1a491a43bd8246535cd1b3e308
+          - id: pair_5877039eedba4762887cca37b8c6144d
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
@@ -538,12 +637,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _.base_url }}/accounts/994094d8-1580-44d2-9fc9-f115e19cfa20/users"
+      - url: "{{ _.base_url }}/accounts/ceb99182-4480-41d9-bd57-11d8c2546cc0/users"
         name: Add User To Account
         meta:
           id: req_d81c59f08b2c425eb6db0a6ace8bec5b
           created: 1763417140226
-          modified: 1763427875443
+          modified: 1763558532348
           isPrivate: false
           description: ""
           sortKey: -1763293401021
@@ -552,12 +651,17 @@ collection:
           mimeType: application/json
           text: |-
             {
-            	"userId": "2e47f8f7-16b3-4dd2-9ad1-a9d4d39fc3d6"
+            	"userId": "de58370a-7215-43d5-a95b-edd08b27c464"
             }
         headers:
           - name: Content-Type
             value: application/json
             id: pair_ac00dcc9f7c6459689a46ad05b44f667
+            disabled: false
+          - id: pair_9ea7031f77d243f59e5bbf6a4912ec96
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
             disabled: false
         authentication:
           type: bearer
@@ -572,13 +676,13 @@ collection:
             store: true
           rebuildPath: true
       - url: "{{ _.base_url
-          }}/accounts/994094d8-1580-44d2-9fc9-f115e19cfa20/users/2e47f8f7-16b3-\
-          4dd2-9ad1-a9d4d39fc3d6"
+          }}/accounts/ceb99182-4480-41d9-bd57-11d8c2546cc0/users/f28e2115-edc0-\
+          4f3f-9f92-66ead86b64e8"
         name: Remove User From Account
         meta:
           id: req_0236a8f2834146599f10bf950726a815
           created: 1763422319284
-          modified: 1763424589882
+          modified: 1763513697911
           isPrivate: false
           description: ""
           sortKey: -1763293400521
@@ -586,6 +690,12 @@ collection:
         headers:
           - name: Content-Type
             value: application/json
+            id: pair_a2b2ebcd8a0f44bd8c788abb1176a95a
+          - id: pair_0f1d126d8d504d4c9089b50bf2260f05
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
@@ -598,12 +708,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _.base_url }}/accounts/04fb104f-e694-4ab2-82dc-9190a332ddf8"
+      - url: "{{ _.base_url }}/accounts/ceb99182-4480-41d9-bd57-11d8c2546cc0"
         name: Edit Account
         meta:
           id: req_307965a13cb444269ecfeb9d5c0833e3
           created: 1763424011813
-          modified: 1763426338609
+          modified: 1763513451774
           isPrivate: false
           description: ""
           sortKey: -1763293400633.5
@@ -612,12 +722,18 @@ collection:
           mimeType: application/json
           text: |-
             {
-                 "accountTypeId": "f47bd097-b34e-44cf-8488-4aa44ce3ccbf",
-                 "status": "ACTIVE"
+                 "accountTypeId": "968b27ab-de65-4461-ad75-2bc3d180cb9d",
+            		 "status": "ACTIVE"
             }
         headers:
           - name: Content-Type
             value: application/json
+            id: pair_ed1efdface43462398d6cc0b131d1126
+          - id: pair_94d4724652394ea580cae9ee9545b697
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
@@ -643,7 +759,7 @@ collection:
         meta:
           id: req_60d272d384694d59b17fe2970212fefd
           created: 1763374904371
-          modified: 1763430926687
+          modified: 1763521996147
           isPrivate: false
           description: ""
           sortKey: -1763374904371
@@ -652,14 +768,21 @@ collection:
           mimeType: application/json
           text: |-
             {
-                "email": "admin@example.com",
+                "email": "{{ _.email_user_administrator }}",
                 "password": "admin123"
             }
         headers:
           - name: Content-Type
             value: application/json
+            id: pair_7af9014cf603441ba19f48e5811cbfe3
           - name: User-Agent
             value: insomnia/12.0.0
+            id: pair_ea07ad3af6aa4a9890d41d522c67478e
+          - id: pair_971494bd11864722baf03477c9471d10
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -681,7 +804,7 @@ collection:
         meta:
           id: req_a12769366d914239aa81ffcc701d7446
           created: 1763421349484
-          modified: 1763468056485
+          modified: 1763508463731
           isPrivate: false
           description: ""
           sortKey: -1763421262936
@@ -690,6 +813,11 @@ collection:
           - name: Content-Type
             value: application/json
             id: pair_3ee67f345e9d45c7aca9df85213ad353
+          - id: pair_823654f658fb4a85802aa461e670720d
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
@@ -707,7 +835,7 @@ collection:
         meta:
           id: req_45235755837a4fa49cfe44b5513a2833
           created: 1763421391083
-          modified: 1763428363069
+          modified: 1763513965118
           isPrivate: false
           description: ""
           sortKey: -1763421263036
@@ -716,13 +844,18 @@ collection:
           mimeType: application/json
           text: |-
             {
-                 "name": "CHECKING",
+                 "name": "aa",
                  "description": "Premium account with exclusive benefits."
              }
         headers:
           - name: Content-Type
             value: application/json
             id: pair_aa6d14f5757d4274aaea7fce163783a5
+          - id: pair_030797c6ca834d0cb897b5110cdc8a75
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
@@ -735,12 +868,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _.base_url }}/account-types/30185be8-df34-4c06-a129-eaa5bace009c"
+      - url: "{{ _.base_url }}/account-types/b6ca1bf6-4339-4045-8834-1d86102b0618"
         name: Get Account Type By ID
         meta:
           id: req_997196135c70445590f23d61cb09661e
           created: 1763421411920
-          modified: 1763426960119
+          modified: 1763514010799
           isPrivate: false
           description: ""
           sortKey: -1763421262886
@@ -749,6 +882,11 @@ collection:
           - name: Content-Type
             value: application/json
             id: pair_9fbaad2465994727bfe4b6cd6b606193
+          - id: pair_f309ca8854ae4dc2843e46b79cf0239d
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
@@ -787,12 +925,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _.base_url }}/account-types/f47bd097-b34e-44cf-8488-4aa44ce3ccbf"
+      - url: "{{ _.base_url }}/account-types/b6ca1bf6-4339-4045-8834-1d86102b0618"
         name: Update Account Type
         meta:
           id: req_7bf7139738f8490c82ca259ab39cb17f
           created: 1763426686214
-          modified: 1763428444342
+          modified: 1763514218083
           isPrivate: false
           description: ""
           sortKey: -1763421262736
@@ -801,12 +939,18 @@ collection:
           mimeType: application/json
           text: |-
             {
-                 "name": "CHECKING",
-                 "description": "My new Type"
+                 "name": "OKOK",
+            	   "description": "My new Type"
             }
         headers:
           - name: Content-Type
             value: application/json
+            id: pair_84043e18c9954c8b9ead7204a0e66c52
+          - id: pair_16f3cee5da5e4b81929386ebc7fb520e
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
@@ -832,11 +976,17 @@ collection:
         meta:
           id: req_6e53a0c6f3644422bc501329b60a7cb9
           created: 1763427721211
-          modified: 1763427935755
+          modified: 1763508508553
           isPrivate: false
           description: ""
           sortKey: -1763427739484
         method: GET
+        headers:
+          - id: pair_5b024e1dab6248be906c0aeb2ef2e5f5
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
@@ -854,7 +1004,7 @@ collection:
         meta:
           id: req_f040a1b219ac47fc970403eb4ad3e6e0
           created: 1763427751916
-          modified: 1763428130520
+          modified: 1763562424757
           isPrivate: false
           description: ""
           sortKey: -1763427739584
@@ -863,16 +1013,22 @@ collection:
           mimeType: application/json
           text: |
             {
-                 "name": "Admin",
+                 "name": "LALA",
                  "description": "Administrator - full permissions"
             }
         headers:
           - name: Content-Type
             value: application/json
+            id: pair_4264f06ee822490eadf10c34b68d43d2
+          - id: pair_38fa03b0b83549b4ae2ef36e2d97be47
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
-            'b64::JC5hY2Nlc3NfdG9rZW4=::46b', 'never', 60 %}"
+            'b64::JC5hY2Nlc3NfdG9rZW4=::46b', 'when-expired', 60 %}"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -886,11 +1042,17 @@ collection:
         meta:
           id: req_2d524e2ffb0e4f9d905c1b6a71fb18ed
           created: 1763427772767
-          modified: 1763427977532
+          modified: 1763508511211
           isPrivate: false
           description: ""
           sortKey: -1763427739434
         method: GET
+        headers:
+          - id: pair_7ccf3f0dff7f49548ec39daa724c321e
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
@@ -903,12 +1065,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _.base_url }}/roles/1651acdc-c357-4fa5-8b70-1465af683ad0"
+      - url: "{{ _.base_url }}/roles/659e98a5-b96b-41a7-a92e-49ae6069b37c"
         name: PUT Update Role
         meta:
           id: req_f439b66dceb4420b948a9c3dda8e6988
           created: 1763427810673
-          modified: 1763428873287
+          modified: 1763510003872
           isPrivate: false
           description: ""
           sortKey: -1763427739284
@@ -917,12 +1079,18 @@ collection:
           mimeType: application/json
           text: |-
             {
-                 "name": "Admin",
-                 "description": "Management role"
+                 "name": "AK8",
+                 "description": " role"
                }
         headers:
           - name: Content-Type
             value: application/json
+            id: pair_deea72595f1b468ebbccfb206a48ed40
+          - id: pair_f11c2b14f2c048fe8185e0db3c967347
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
@@ -935,16 +1103,22 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: "{{ _.base_url }}/roles/1651acdc-c357-4fa5-8b70-1465af683ad0"
+      - url: "{{ _.base_url }}/roles/659e98a5-b96b-41a7-a92e-49ae6069b37c"
         name: DELETE Role
         meta:
           id: req_ac2a828306a44d1bbee06b8a57e5fedf
           created: 1763427830757
-          modified: 1763428881781
+          modified: 1763510019818
           isPrivate: false
           description: ""
           sortKey: -1763427739184
         method: DELETE
+        headers:
+          - id: pair_4c6d404272a844e9a0afe3709ecb4e49
+            name: correlation-id
+            value: "{{ _.correlation_id }}"
+            description: ""
+            disabled: false
         authentication:
           type: bearer
           token: "{% response 'body', 'req_60d272d384694d59b17fe2970212fefd',
@@ -968,7 +1142,7 @@ environments:
   meta:
     id: env_03f091b6c04f4ca6a63dbe5139dc5619
     created: 1763293279073
-    modified: 1763405601447
+    modified: 1763508445572
     isPrivate: false
   data:
     base_url: http://localhost:3000
@@ -976,3 +1150,4 @@ environments:
     email_user_operator: mary@example.com
     email_user_administrator: admin@example.com
     default_password: "123456"
+    correlation_id: 0ede33df-035a-4506-a9d8-1c728e32c332

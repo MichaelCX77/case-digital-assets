@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { TransactionRepository } from '../transaction.repository';
 import { AccountRepository } from '../../account/account.repository';
-import { WithdrawFlow } from '../interfaces/transaction-flow.interface';
+import type { WithdrawFlow } from '../interfaces/transaction-flow.interface';
 
 @Injectable()
 export class WithdrawFlowService implements WithdrawFlow {
@@ -11,30 +11,53 @@ export class WithdrawFlowService implements WithdrawFlow {
   ) {}
 
   async execute(dto: any, transactionId: string) {
-    if (!dto.sourceAccountId)
-      throw new BadRequestException('sourceAccountId is required for withdrawal');
-    if (!dto.operatorUserId)
-      throw new BadRequestException('operatorUserId is required for withdrawal');
+    this.validateInput(dto);
 
-    const account = await this.accountRepo.findById(dto.sourceAccountId);
-    if (!account) throw new NotFoundException('Account not found');
+    const account = await this.getAccountOrThrow(dto.sourceAccountId, 'Account not found');
+    await this.assertOperationOwner(account, dto.operatorUserId);
 
-    const userAccounts = await this.accountRepo.listUsers(dto.sourceAccountId);
-    const isOwner = userAccounts.some(ua => ua.user?.id === dto.operatorUserId);
-    if (!isOwner) {
-      throw new ForbiddenException('User is not owner of the account');
+    this.assertSufficientFunds(account, dto.amount);
+
+    const transaction = await this.createWithdrawTransaction(account, dto, transactionId);
+    await this.accountRepo.update(dto.sourceAccountId, { balance: transaction.balanceAfter });
+
+    return transaction;
+  }
+
+  private validateInput(dto: any) {
+    const requiredFields: [keyof typeof dto, string][] = [
+      ['sourceAccountId', 'sourceAccountId is required for withdrawal'],
+      ['operatorUserId', 'operatorUserId is required for withdrawal'],
+    ];
+    for (const [field, message] of requiredFields) {
+      if (!dto[field]) throw new BadRequestException(message);
     }
+  }
 
-    if (account.balance < dto.amount)
+  private async getAccountOrThrow(accountId: string, message: string) {
+    const account = await this.accountRepo.findById(accountId);
+    if (!account) throw new NotFoundException(message);
+    return account;
+  }
+
+  private async assertOperationOwner(account: any, operatorUserId: string) {
+    const userAccounts = await this.accountRepo.listUsers(account.idAccount || account.id);
+    const isOwner = userAccounts.some(ua => ua.user?.id === operatorUserId);
+    if (!isOwner) throw new ForbiddenException('User is not owner of the account');
+  }
+
+  private assertSufficientFunds(account: any, amount: number) {
+    if (account.balance < amount) {
       throw new BadRequestException({
         message: 'Insufficient funds',
         detail: { balance: account.balance }
       });
+    }
+  }
 
+  private async createWithdrawTransaction(account: any, dto: any, transactionId: string) {
     const balanceAfter = account.balance - dto.amount;
-    await this.accountRepo.update(dto.sourceAccountId, { balance: balanceAfter });
-
-    const transaction = await this.transactionRepo.create({
+    return this.transactionRepo.create({
       idTransaction: transactionId,
       sourceAccountId: dto.sourceAccountId,
       destinationAccountId: null,
@@ -46,6 +69,5 @@ export class WithdrawFlowService implements WithdrawFlow {
       timestamp: new Date(),
       visibleToAccountId: dto.sourceAccountId,
     });
-    return transaction;
   }
 }
