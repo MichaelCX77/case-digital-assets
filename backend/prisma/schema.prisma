@@ -3,6 +3,13 @@
 /// This schema defines models for users, accounts, roles, transactions, and their relationships.
 /// All table and field mappings use explicit naming for clarity and consistency with SQL schema.
 /// Each model includes documentation to clarify purpose, relations, required fields, and special behaviors.
+///
+/// ATUALIZAÇÃO: As referências para operador de transação (operatorUserId, operator) foram removidas.
+/// O campo operatorUserId permanece apenas como identificador livre (string), sem relação/fk para User.
+/// O array "transactions" do User também foi removido.
+/// Toda validação é feita exclusivamente no backend.
+///
+/// Para evitar erros de relacionamento, rode `prisma migrate dev` após salvar.
 
 generator client {
   provider = "prisma-client-js"
@@ -18,7 +25,9 @@ datasource db {
 //
 /// User model represents a system user.
 /// Each user is uniquely identified and assigned a role.
-/// Supports many-to-many associations with accounts and tracks which transactions each user operates.
+/// Supports many-to-many associations with accounts.
+///
+/// ATENÇÃO: Não possui mais relação direta com transações (foi removida).
 model User {
   /// User ID (UUID, primary key).
   id           String    @id @default(uuid()) @map("id_user")
@@ -34,11 +43,9 @@ model User {
   role         Role      @relation(fields: [roleId], references: [id], onDelete: Restrict)
   /// Accounts associated to user (N:N via UserAccount).
   accounts     UserAccount[]
-  /// Transactions performed by user as operator.
-  transactions Transaction[] @relation("OperatorTransactions")
-  /// When the user was created.
+  /// Quando foi criado.
   createdAt    DateTime  @default(now()) @map("created_at")
-  /// When the user was last updated.
+  /// Última atualização.
   updatedAt    DateTime  @updatedAt @map("updated_at")
   @@map("user")
 }
@@ -68,7 +75,7 @@ model AccountType {
 // ACCOUNT
 //
 /// Account model stores balance and indicates type/status.
-/// Linked N:N to users via UserAccount; holds transactions.
+/// Linked N:N to users via UserAccount.
 /// Account type is required; status defaults to "ACTIVE".
 model Account {
   /// Account ID (UUID, primary key).
@@ -83,8 +90,6 @@ model Account {
   status        String         @default("ACTIVE") @map("status")
   /// Users associated with account (N:N).
   users         UserAccount[]
-  /// Transactions related to this account.
-  transactions  Transaction[]
   /// When the account was created.
   createdAt     DateTime       @default(now()) @map("created_at")
   /// When the account was updated.
@@ -118,13 +123,18 @@ model UserAccount {
 // TRANSACTIONS
 //
 /// Transaction model logs account operations (deposit, withdrawal, transfer, etc.).
-/// Stores before/after balances, operator, source/destination, timestamp.
+/// For transfer operations, two records will share the same transaction ID, but each will have a distinct type ("TRANSFER_IN" or "TRANSFER_OUT").
+/// The composite key (idTransaction, type) is guaranteed unique, thus supporting paired/mirrored transfer records.
+/// There is NO relation to user operator; the operatorUserId field is a free-form identifier.
+/// visibleToAccountId is the UUID of the account for which the transaction is visible (mandatory, backend-only, must be set by business logic, never by client).
 model Transaction {
-  /// Transaction ID (UUID, primary key).
-  idTransaction        String    @id @default(uuid()) @map("id_transaction")
-  /// Foreign key to Account.
-  accountId            String    @map("account_id")
-  /// Type of transaction ("DEPOSIT", "TRANSFER", etc.).
+  /// Transaction ID (UUID, can be shared between two records of a transfer).
+  idTransaction        String    @map("id_transaction")
+  /// Source account ID (nullable, transfer only).
+  sourceAccountId      String?   @map("source_account_id")
+  /// Destination account ID (nullable, transfer only).
+  destinationAccountId String?   @map("destination_account_id")
+  /// Type of transaction ("DEPOSIT", "WITHDRAW", "TRANSFER_IN", "TRANSFER_OUT").
   type                 String    @map("type")
   /// Transaction amount.
   amount               Float     @map("amount")
@@ -134,20 +144,16 @@ model Transaction {
   balanceBefore        Float     @map("balance_before")
   /// Balance after transaction.
   balanceAfter         Float     @map("balance_after")
-  /// User ID for transaction operator (nullable).
+  /// Operator user identifier (free-form, not a FK).
   operatorUserId       String?   @map("operator_user_id")
-  /// Destination account ID (nullable, transfer only).
-  destinationAccountId String?   @map("destination_account_id")
-  /// Source account ID (nullable, transfer only).
-  sourceAccountId      String?   @map("source_account_id")
-  /// Relation to account; cascades on delete/update.
-  account   Account @relation(fields: [accountId], references: [idAccount], onDelete: Cascade, onUpdate: Cascade)
-  /// Relation to operator user; set null on delete.
-  operator  User?   @relation("OperatorTransactions", fields: [operatorUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  /// Account for which the transaction is visible (mandatory, backend-only, never set from client).
+  visibleToAccountId   String    @map("visible_to_account_id")
   /// Creation timestamp.
-  createdAt DateTime @default(now()) @map("created_at")
+  createdAt            DateTime  @default(now()) @map("created_at")
   /// Last update timestamp.
-  updatedAt DateTime @updatedAt @map("updated_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  @@id([idTransaction, type])
   @@map("transaction")
 }
 

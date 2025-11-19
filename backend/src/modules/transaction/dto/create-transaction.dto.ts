@@ -1,35 +1,54 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsNumber, IsOptional, IsUUID } from 'class-validator';
+import { TransactionTypeOptions } from '../enums/transaction-type.enum';
 
 /**
  * CreateTransactionDto
  *
- * DTO representing data required to create a transfer transaction.
- *
- * All fields are required and must be provided when requesting a new transfer.
- * The only accepted value for `type` is "TRANSFER" (handled/validated by service).
+ * DTO for creating a transaction.
+ * Allows DEPOSIT, WITHDRAW, TRANSFER (all fields are optional except type and amount).
+ * Business validation must be enforced in the service layer:
+ * - DEPOSIT: only destinationAccountId is set/required.
+ * - WITHDRAW: only sourceAccountId and operatorUserId are set/required. Operator must be owner.
+ * - TRANSFER: both sourceAccountId and destinationAccountId are required. Operator must be owner of source.
  */
 export class CreateTransactionDto {
-  /**
-   * The type of transaction. Only "TRANSFER" is accepted.
-   */
-  @ApiProperty({ example: 'TRANSFER', description: 'The operation type. Only TRANSFER is allowed.' })
-  type: string;
+  /** The type of operation: "DEPOSIT", "WITHDRAW", or "TRANSFER". */
+  @ApiProperty({ example: 'DEPOSIT', description: 'Operation type: DEPOSIT, WITHDRAW, TRANSFER.' })
+  @IsString()
+  type: TransactionTypeOptions;
 
-  /**
-   * Amount to transfer between accounts.
-   */
-  @ApiProperty({ example: 100, description: 'Amount to transfer.' })
+  /** Amount for the transaction. */
+  @ApiProperty({ example: 100, description: 'Amount for the transaction.' })
+  @IsNumber()
   amount: number;
 
-  /**
-   * ID of the destination account that will receive the transfer.
-   */
-  @ApiProperty({ example: 'destination-account-id', description: 'ID of destination account.' })
-  destinationAccountId: string;
+  /** Source account ID (required for WITHDRAW and TRANSFER, never for DEPOSIT). */
+  @ApiProperty({
+    example: 'source-account-id-uuid',
+    description: 'Source account ID (required for WITHDRAW and TRANSFER).',
+    required: false
+  })
+  @IsString()
+  @IsOptional()
+  @IsUUID()
+  sourceAccountId?: string;
 
-  /**
-   * ID of the operator user who must be the owner of the source account (accountId in route parameter).
-   */
-  @ApiProperty({ example: 'operator-user-id', description: 'ID of the operator user who owns the source account.' })
-  operatorUserId: string;
+  /** Destination account ID (required for DEPOSIT and TRANSFER, never for WITHDRAW). */
+  @ApiProperty({
+    example: 'destination-account-id-uuid',
+    description: 'Destination account ID (required for DEPOSIT and TRANSFER).',
+    required: false
+  })
+  @IsString()
+  @IsOptional()
+  @IsUUID()
+  destinationAccountId?: string;
+
+  /** User who initiates the transaction (required for transfer and withdrawal, optional for deposit). */
+  @ApiProperty({ example: 'operator-user-id', description: 'Operator user ID (required for withdrawal/transfer, optional for deposit).', required: false })
+  @IsString()
+  @IsOptional()
+  @IsUUID()
+  operatorUserId?: string;
 }

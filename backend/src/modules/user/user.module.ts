@@ -12,6 +12,6 @@ import { RoleModule } from '../role/role.module';
   imports: [PrismaModule, RoleModule],
   controllers: [UserController],
   providers: [UserService, UserRepository],
-  exports: [UserService, UserRepository]
+  exports: [UserService, UserRepository,]
 })
 export class UserModule {}

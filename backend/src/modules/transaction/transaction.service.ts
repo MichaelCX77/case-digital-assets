@@ -1,95 +1,86 @@
-import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, Inject } from '@nestjs/common';
 import { TransactionRepository } from './transaction.repository';
 import { AccountRepository } from '../account/account.repository';
+import { UserRepository } from '../user/user.repository';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { TransactionType } from './enums/transation-type.enum';
+import { TransactionTypeOptions } from './enums/transaction-type.enum';
+import type { DepositFlow, WithdrawFlow, TransferFlow } from './interfaces/transaction-flow.interface';
+import { randomUUID } from 'crypto';
 
 /**
- * Service responsible for handling transaction business logic.
+ * Central orchestrator for transaction business logic (SOLID).
+ * Each flow is handled by its dedicated service.
  */
 @Injectable()
 export class TransactionService {
   constructor(
     private readonly transactionRepo: TransactionRepository,
-    private readonly accountRepo: AccountRepository
+    private readonly accountRepo: AccountRepository,
+    private readonly userRepo: UserRepository,
+
+    @Inject('DepositFlow')
+    private readonly depositFlow: DepositFlow,
+
+    @Inject('WithdrawFlow')
+    private readonly withdrawFlow: WithdrawFlow,
+
+    @Inject('TransferFlow')
+    private readonly transferFlow: TransferFlow,
   ) {}
 
   /**
-   * Get all transactions for an account.
-   * @param accountId Account to retrieve transactions from.
-   * @returns Array of transactions for the provided account.
+   * List transactions filtered by visibleToAccountId if accountId provided,
+   * otherwise all transactions are listed.
+   * @param accountId Optional account ID for filtering which transactions are visible to the account.
+   * @returns Array of transactions.
    */
-  async getTransactions(accountId: string) {
-    const account = await this.accountRepo.findById(accountId);
-    if (!account) throw new NotFoundException('Account not found');
-    const transactions = await this.transactionRepo.findByAccount(accountId);
-    return transactions;
+  async getTransactions(accountId?: string) {
+    if (accountId) {
+      const account = await this.accountRepo.findById(accountId);
+      if (!account) throw new NotFoundException('Account not found');
+      return this.transactionRepo.findByVisibleToAccountId(accountId);
+    }
+    return this.transactionRepo.findAll();
   }
 
   /**
-   * Creates a transfer transaction between two accounts.
-   * Only accepts type TRANSFER.
-   * @param accountId Source account ID initiating the transfer.
-   * @param dto Transfer transaction details.
-   * @returns The created transfer (TRANSFER_OUT) transaction.
+   * Get a specific transaction by idTransaction and type.
    */
-  async createTransaction(accountId: string, dto: CreateTransactionDto) {
-    if (dto.type !== 'TRANSFER') {
-      throw new BadRequestException('Only TRANSFER operations are permitted');
+  async getTransactionByIdAndType(idTransaction: string, type: string) {
+    const transaction = await this.transactionRepo.findByIdAndType(idTransaction, type);
+    if (!transaction) throw new NotFoundException('Transaction not found');
+    return transaction;
+  }
+
+  /**
+   * Orchestrates creation of a transaction via the correct flow service.
+   * @param dto Transaction details.
+   * @param idTransaction Optional UUID. If not provided, generated automatically.
+   * @returns The created transaction (see business rules for TRANSFER).
+   */
+  async createTransaction(dto: CreateTransactionDto, idTransaction?: string) {
+    const transactionId = idTransaction ?? randomUUID();
+
+    if (!dto.type || !dto.amount)
+      throw new BadRequestException('Type and amount are required');
+    if (dto.amount <= 0)
+      throw new BadRequestException('Amount must be positive');
+
+    // Validate operator user if provided
+    if (dto.operatorUserId) {
+      const user = await this.userRepo.findById(dto.operatorUserId);
+      if (!user) throw new NotFoundException('Operator user not found');
     }
 
-    const account = await this.accountRepo.findById(accountId);
-    if (!account) throw new NotFoundException('Account not found');
-    if (dto.amount <= 0) throw new BadRequestException('Amount must be positive');
-    if (!dto.destinationAccountId) throw new BadRequestException({ message: 'Destination account ID required for transfer' });
-
-    const userAccounts = await this.accountRepo.listUsers(accountId);
-    const isOwner = userAccounts.some(
-      userAccount => userAccount.user?.id === dto.operatorUserId
-    );
-    if (!isOwner) {
-      throw new ForbiddenException({ message: 'User is not owner of the source account' });
+    switch (dto.type) {
+      case TransactionTypeOptions.TRANSFER:
+        return this.transferFlow.execute(dto, transactionId);
+      case TransactionTypeOptions.WITHDRAW:
+        return this.withdrawFlow.execute(dto, transactionId);
+      case TransactionTypeOptions.DEPOSIT:
+        return this.depositFlow.execute(dto, transactionId);
+      default:
+        throw new BadRequestException('Unsupported transaction type');
     }
-
-    if (account.balance < dto.amount) {
-      throw new BadRequestException({
-        message: 'Insufficient funds',
-        detail: { balance: account.balance }
-      });
-    }
-
-    const destAccount = await this.accountRepo.findById(dto.destinationAccountId);
-    if (!destAccount)
-      throw new BadRequestException({ message: 'Destination account not found' });
-
-    const balanceAfterSource = account.balance - dto.amount;
-    await this.accountRepo.update(accountId, { balance: balanceAfterSource });
-
-    const transactionOut = await this.transactionRepo.create({
-      accountId,
-      type: TransactionType.TRANSFER_OUT,
-      amount: dto.amount,
-      balanceBefore: account.balance,
-      balanceAfter: balanceAfterSource,
-      operatorUserId: dto.operatorUserId,
-      timestamp: new Date(),
-      destinationAccountId: dto.destinationAccountId,
-    });
-
-    const balanceAfterDest = destAccount.balance + dto.amount;
-    await this.accountRepo.update(dto.destinationAccountId, { balance: balanceAfterDest });
-
-    await this.transactionRepo.create({
-      accountId: dto.destinationAccountId,
-      type: TransactionType.TRANSFER_IN,
-      amount: dto.amount,
-      balanceBefore: destAccount.balance,
-      balanceAfter: balanceAfterDest,
-      operatorUserId: dto.operatorUserId,
-      timestamp: new Date(),
-      sourceAccountId: accountId,
-    });
-
-    return transactionOut;
   }
 }
