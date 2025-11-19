@@ -8,8 +8,9 @@ import type { DepositFlow, WithdrawFlow, TransferFlow } from './interfaces/trans
 import { randomUUID } from 'crypto';
 
 /**
- * Central orchestrator for transaction business logic (SOLID).
- * Each flow is handled by its dedicated service.
+ * TransactionService is the main orchestrator for all business logic related to transactions.
+ * It follows the SOLID principles by delegating each flow (deposit, withdraw, transfer) to a dedicated service,
+ * thus making the process more maintainable, testable and extensible.
  */
 @Injectable()
 export class TransactionService {
@@ -29,22 +30,25 @@ export class TransactionService {
   ) {}
 
   /**
-   * List transactions filtered by visibleToAccountId if accountId provided,
-   * otherwise all transactions are listed.
-   * @param accountId Optional account ID for filtering which transactions are visible to the account.
+   * Returns all transactions or filters by visibleToAccountId if an accountId is provided.
+   * @param accountId Optional account ID for filtering visible transactions.
    * @returns Array of transactions.
+   * @throws NotFoundException if the provided account is not found.
    */
   async getTransactions(accountId?: string) {
-    if (accountId) {
-      const account = await this.accountRepo.findById(accountId);
-      if (!account) throw new NotFoundException('Account not found');
-      return this.transactionRepo.findByVisibleToAccountId(accountId);
-    }
-    return this.transactionRepo.findAll();
+    if (!accountId) return this.transactionRepo.findAll();
+
+    const account = await this.accountRepo.findById(accountId);
+    if (!account) throw new NotFoundException('Account not found');
+    return this.transactionRepo.findByVisibleToAccountId(accountId);
   }
 
   /**
-   * Get a specific transaction by idTransaction and type.
+   * Retrieves a specific transaction given the transaction UUID and type.
+   * @param idTransaction The transaction UUID.
+   * @param type The transaction type.
+   * @returns The transaction if found.
+   * @throws NotFoundException if the transaction does not exist.
    */
   async getTransactionByIdAndType(idTransaction: string, type: string) {
     const transaction = await this.transactionRepo.findByIdAndType(idTransaction, type);
@@ -53,34 +57,55 @@ export class TransactionService {
   }
 
   /**
-   * Orchestrates creation of a transaction via the correct flow service.
-   * @param dto Transaction details.
-   * @param idTransaction Optional UUID. If not provided, generated automatically.
-   * @returns The created transaction (see business rules for TRANSFER).
+   * Validates required properties before processing the request for creation.
+   * Elegantly reduces repetitive validation with a single loop.
+   * @param dto Transaction details DTO.
+   * @throws BadRequestException if validation fails.
+   */
+  private validateTransactionCreation(dto: CreateTransactionDto) {
+    const requiredFields: [keyof CreateTransactionDto, string][] = [
+      ['type', 'Type is required'],
+      ['amount', 'Amount is required'],
+    ];
+    for (const [field, message] of requiredFields) {
+      if (!dto[field]) throw new BadRequestException(message);
+    }
+    if (dto.amount <= 0) throw new BadRequestException('Amount must be positive');
+  }
+
+  /**
+   * Validates existence of operator user if operatorUserId is present.
+   * @param operatorUserId UUID of the operator user.
+   * @throws NotFoundException if operator user is not found.
+   */
+  private async validateOperatorUser(operatorUserId?: string) {
+    if (!operatorUserId) return;
+    const user = await this.userRepo.findById(operatorUserId);
+    if (!user) throw new NotFoundException('Operator user not found');
+  }
+
+  /**
+   * Orchestrates the creation of a transaction, delegating the workflow to
+   * the respective flow service in an extensible and maintainable way.
+   * @param dto Transaction creation DTO.
+   * @param idTransaction Optional UUID for the transaction.
+   * @returns The created transaction.
+   * @throws BadRequestException if transaction type is not supported.
    */
   async createTransaction(dto: CreateTransactionDto, idTransaction?: string) {
     const transactionId = idTransaction ?? randomUUID();
 
-    if (!dto.type || !dto.amount)
-      throw new BadRequestException('Type and amount are required');
-    if (dto.amount <= 0)
-      throw new BadRequestException('Amount must be positive');
+    this.validateTransactionCreation(dto);
+    await this.validateOperatorUser(dto.operatorUserId);
 
-    // Validate operator user if provided
-    if (dto.operatorUserId) {
-      const user = await this.userRepo.findById(dto.operatorUserId);
-      if (!user) throw new NotFoundException('Operator user not found');
-    }
+    const flowMap: Record<string, (dto: any, id: string) => Promise<any>> = {
+      [TransactionTypeOptions.TRANSFER]: this.transferFlow.execute.bind(this.transferFlow),
+      [TransactionTypeOptions.WITHDRAW]: this.withdrawFlow.execute.bind(this.withdrawFlow),
+      [TransactionTypeOptions.DEPOSIT]: this.depositFlow.execute.bind(this.depositFlow),
+    };
 
-    switch (dto.type) {
-      case TransactionTypeOptions.TRANSFER:
-        return this.transferFlow.execute(dto, transactionId);
-      case TransactionTypeOptions.WITHDRAW:
-        return this.withdrawFlow.execute(dto, transactionId);
-      case TransactionTypeOptions.DEPOSIT:
-        return this.depositFlow.execute(dto, transactionId);
-      default:
-        throw new BadRequestException('Unsupported transaction type');
-    }
+    const flowHandler = flowMap[dto.type];
+    if (!flowHandler) throw new BadRequestException('Unsupported transaction type');
+    return flowHandler(dto, transactionId);
   }
 }
