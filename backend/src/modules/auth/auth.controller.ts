@@ -2,6 +2,7 @@
  * Controller for authentication endpoints.
  * Exposes route for generating JWT tokens using email and password.
  * Includes OpenAPI/Swagger docs for input and output models.
+ * OBS: Esta controller é responsável por montar o DTO de saída do token.
  */
 import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -14,6 +15,7 @@ export class AuthController {
 
   /**
    * Generates a JWT authentication token based on user credentials.
+   * Monta o DTO de saída { access_token }.
    * @param body Object containing user's email and password.
    * @returns Object containing JWT token.
    */
@@ -37,6 +39,7 @@ export class AuthController {
     }
   })
   async getToken(@Body() body: { email: string; password: string }) {
-    return this.authService.issueTokenByEmail(body.email, body.password);
+    const token = await this.authService.issueTokenByEmail(body.email, body.password);
+    return { access_token: token };
   }
 }

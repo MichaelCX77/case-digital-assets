@@ -13,6 +13,6 @@ import { UserModule } from '../user/user.module';
   imports: [PrismaModule, UserModule],
   controllers: [AccountController],
   providers: [AccountService, AccountRepository],
-  exports: [AccountService, AccountRepository] // Need to export AccountRepository for usage in other modules.
+  exports: [AccountRepository] // Need to export AccountRepository for usage in other modules.
 })
 export class AccountModule {}

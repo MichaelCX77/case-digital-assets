@@ -5,6 +5,10 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { RoleResponseDto } from './dto/role-response.dto';
 
+/**
+ * Controller for handling role endpoints.
+ * Responsável por montar os DTOs de saída antes do envio da resposta.
+ */
 @ApiTags('Roles')
 @ApiBearerAuth()
 @Controller('roles')
@@ -19,7 +23,8 @@ export class RoleController {
   @ApiOperation({ summary: 'List all roles' })
   @ApiResponse({ status: 200, type: [RoleResponseDto] })
   async list() {
-    return this.service.listRoles();
+    const roles = await this.service.listRoles();
+    return roles.map(role => new RoleResponseDto(role));
   }
 
   /**
@@ -31,7 +36,8 @@ export class RoleController {
   @ApiOperation({ summary: 'Get role by ID' })
   @ApiResponse({ status: 200, type: RoleResponseDto })
   async getOne(@Param('id') id: string) {
-    return this.service.getRole(id);
+    const role = await this.service.getRole(id);
+    return new RoleResponseDto(role);
   }
 
   /**
@@ -45,7 +51,8 @@ export class RoleController {
   @ApiBody({ type: CreateRoleDto })
   @ApiResponse({ status: 201, type: RoleResponseDto })
   async create(@Body() dto: CreateRoleDto) {
-    return this.service.createRole(dto);
+    const role = await this.service.createRole(dto);
+    return new RoleResponseDto(role);
   }
 
   /**
@@ -60,7 +67,8 @@ export class RoleController {
   @ApiBody({ type: UpdateRoleDto })
   @ApiResponse({ status: 200, type: RoleResponseDto })
   async update(@Param('id') id: string, @Body() dto: UpdateRoleDto) {
-    return this.service.updateRole(id, dto);
+    const role = await this.service.updateRole(id, dto);
+    return new RoleResponseDto(role);
   }
 
   /**

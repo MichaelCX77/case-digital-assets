@@ -12,6 +12,6 @@ import { PrismaModule } from '../prisma/prisma.module';
   imports: [PrismaModule],
   controllers: [AccountTypeController],
   providers: [AccountTypeService, AccountTypeRepository],
-  exports: [AccountTypeService] // Export the service for use in other modules
+  exports: [] // Export the service for use in other modules
 })
 export class AccountTypeModule {}
