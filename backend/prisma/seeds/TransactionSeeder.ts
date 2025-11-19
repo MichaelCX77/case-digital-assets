@@ -19,7 +19,7 @@ export class TransactionSeeder implements ISeeder {
 
     await prisma.transaction.create({
       data: {
-        idTransaction: randomUUID(),
+        transactionId: randomUUID(),
         destinationAccountId: account.idAccount,
         type: 'DEPOSIT',
         amount: 500,

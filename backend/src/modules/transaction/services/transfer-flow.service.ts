@@ -92,7 +92,7 @@ export class TransferFlowService implements TransferFlow {
     const balanceAfterSource = sourceAccount.balance - dto.amount;
     await this.accountRepo.update(dto.sourceAccountId, { balance: balanceAfterSource });
     return this.transactionRepo.create({
-      idTransaction: transactionId,
+      transactionId: transactionId,
       sourceAccountId: dto.sourceAccountId,
       destinationAccountId: dto.destinationAccountId,
       type: TransactionTypeEffective.TRANSFER_OUT,
@@ -112,7 +112,7 @@ export class TransferFlowService implements TransferFlow {
     const balanceAfterDest = destAccount.balance + dto.amount;
     await this.accountRepo.update(dto.destinationAccountId, { balance: balanceAfterDest });
     return this.transactionRepo.create({
-      idTransaction: transactionId,
+      transactionId: transactionId,
       sourceAccountId: dto.sourceAccountId,
       destinationAccountId: dto.destinationAccountId,
       type: TransactionTypeEffective.TRANSFER_IN,

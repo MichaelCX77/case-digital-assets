@@ -124,12 +124,12 @@ model UserAccount {
 //
 /// Transaction model logs account operations (deposit, withdrawal, transfer, etc.).
 /// For transfer operations, two records will share the same transaction ID, but each will have a distinct type ("TRANSFER_IN" or "TRANSFER_OUT").
-/// The composite key (idTransaction, type) is guaranteed unique, thus supporting paired/mirrored transfer records.
+/// The composite key (transactionId, type) is guaranteed unique, thus supporting paired/mirrored transfer records.
 /// There is NO relation to user operator; the operatorUserId field is a free-form identifier.
 /// visibleToAccountId is the UUID of the account for which the transaction is visible (mandatory, backend-only, must be set by business logic, never by client).
 model Transaction {
   /// Transaction ID (UUID, can be shared between two records of a transfer).
-  idTransaction        String    @map("id_transaction")
+  transactionId        String    @map("id_transaction")
   /// Source account ID (nullable, transfer only).
   sourceAccountId      String?   @map("source_account_id")
   /// Destination account ID (nullable, transfer only).
@@ -153,7 +153,7 @@ model Transaction {
   /// Last update timestamp.
   updatedAt            DateTime  @updatedAt @map("updated_at")
 
-  @@id([idTransaction, type])
+  @@id([transactionId, type])
   @@map("transaction")
 }
 

@@ -28,14 +28,14 @@ export class TransactionRepository {
   }
 
   /**
-   * Finds a specific transaction by idTransaction and type (composite key).
-   * @param idTransaction Transaction UUID.
+   * Finds a specific transaction by transactionId and type (composite key).
+   * @param transactionId Transaction UUID.
    * @param type Transaction type (DEPOSIT, WITHDRAW, TRANSFER_IN, TRANSFER_OUT).
    * @returns The transaction object or null.
    */
-  async findByIdAndType(idTransaction: string, type: string) {
+  async findByIdAndType(transactionId: string, type: string) {
     return this.prisma.transaction.findUnique({
-      where: { idTransaction_type: { idTransaction, type } },
+      where: { transactionId_type: { transactionId, type } },
     });
   }
 

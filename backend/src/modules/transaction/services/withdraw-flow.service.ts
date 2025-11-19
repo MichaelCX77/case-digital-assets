@@ -58,7 +58,7 @@ export class WithdrawFlowService implements WithdrawFlow {
   private async createWithdrawTransaction(account: any, dto: any, transactionId: string) {
     const balanceAfter = account.balance - dto.amount;
     return this.transactionRepo.create({
-      idTransaction: transactionId,
+      transactionId: transactionId,
       sourceAccountId: dto.sourceAccountId,
       destinationAccountId: null,
       type: dto.type,

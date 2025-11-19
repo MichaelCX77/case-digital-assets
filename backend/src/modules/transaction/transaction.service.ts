@@ -45,13 +45,13 @@ export class TransactionService {
 
   /**
    * Retrieves a specific transaction given the transaction UUID and type.
-   * @param idTransaction The transaction UUID.
+   * @param transactionId The transaction UUID.
    * @param type The transaction type.
    * @returns The transaction if found.
    * @throws NotFoundException if the transaction does not exist.
    */
-  async getTransactionByIdAndType(idTransaction: string, type: string) {
-    const transaction = await this.transactionRepo.findByIdAndType(idTransaction, type);
+  async getTransactionByIdAndType(transactionId: string, type: string) {
+    const transaction = await this.transactionRepo.findByIdAndType(transactionId, type);
     if (!transaction) throw new NotFoundException('Transaction not found');
     return transaction;
   }
@@ -88,12 +88,12 @@ export class TransactionService {
    * Orchestrates the creation of a transaction, delegating the workflow to
    * the respective flow service in an extensible and maintainable way.
    * @param dto Transaction creation DTO.
-   * @param idTransaction Optional UUID for the transaction.
+   * @param transactionId Optional UUID for the transaction.
    * @returns The created transaction.
    * @throws BadRequestException if transaction type is not supported.
    */
-  async createTransaction(dto: CreateTransactionDto, idTransaction?: string) {
-    const transactionId = idTransaction ?? randomUUID();
+  async createTransaction(dto: CreateTransactionDto, transactionId?: string) {
+    const txId = transactionId ?? randomUUID();
 
     this.validateTransactionCreation(dto);
     await this.validateOperatorUser(dto.operatorUserId);
@@ -106,6 +106,6 @@ export class TransactionService {
 
     const flowHandler = flowMap[dto.type];
     if (!flowHandler) throw new BadRequestException('Unsupported transaction type');
-    return flowHandler(dto, transactionId);
+    return flowHandler(dto, txId);
   }
 }

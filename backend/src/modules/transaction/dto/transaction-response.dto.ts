@@ -14,7 +14,7 @@ import { TransactionTypeEffective } from '../enums/transaction-type.enum';
  */
 export class TransactionResponseDto {
   @ApiProperty({ example: 'tx-id-uuid' })
-  idTransaction: string;
+  transactionId: string;
 
   @ApiProperty({ example: 'DEPOSIT' })
   type: TransactionTypeEffective;
@@ -43,7 +43,7 @@ export class TransactionResponseDto {
   timestamp: Date;
 
   constructor(tx: any) {
-    this.idTransaction = tx.idTransaction;
+    this.transactionId = tx.transactionId;
     this.type = tx.type;
     this.amount = tx.amount;
     this.sourceAccountId = tx.sourceAccountId ?? null;

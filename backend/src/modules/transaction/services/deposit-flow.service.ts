@@ -62,7 +62,7 @@ export class DepositFlowService implements DepositFlow {
   private async createDepositTransaction(account: any, dto: any, transactionId: string) {
     const balanceAfter = account.balance + dto.amount;
     return this.transactionRepo.create({
-      idTransaction: transactionId,
+      transactionId: transactionId,
       sourceAccountId: null,
       destinationAccountId: account.idAccount,
       type: dto.type,
