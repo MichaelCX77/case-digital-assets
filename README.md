@@ -16,7 +16,7 @@ AWS solution diagram (Draw.io):
 
 ## Prerequisites
 
-- [Node.js (v18+)](https://nodejs.org/)
+- [Node.js (v24.11.1)](https://nodejs.org/)
 - [npm](https://www.npmjs.com/)
 - **No external database or Docker setup is required.**  
   The project uses **embedded SQLite** via Prisma for local development.

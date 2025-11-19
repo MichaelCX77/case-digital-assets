@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { AccountStatus } from '../enum/account-status.enum';
 
 /**
  * DTO for returning account information.
@@ -31,8 +32,8 @@ export class AccountResponseDto {
   /**
    * Current account status.
    */
-  @ApiProperty({ example: 'ACTIVE' })
-  status: string;
+  @ApiProperty({ example: AccountStatus.ACTIVE })
+  status: AccountStatus;
 
   /**
    * Date when account was created.

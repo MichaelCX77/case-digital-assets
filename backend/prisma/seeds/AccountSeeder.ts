@@ -27,8 +27,7 @@ export class AccountSeeder implements ISeeder {
       const account = await prisma.account.create({
         data: {
           balance: 10,
-          accountTypeId: accountType.id,
-          status: "ACTIVE", // required field
+          accountTypeId: accountType.id
         },
       });
 
