@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { TransactionRepository } from '../transaction.repository';
 import { AccountRepository } from '../../account/account.repository';
 import type { DepositFlow } from '../interfaces/transaction-flow.interface';
+import { getIsoDate } from 'src/common/utils/date.utils';
 
 /**
  * Service handling deposit operations into an account.
@@ -70,7 +71,7 @@ export class DepositFlowService implements DepositFlow {
       balanceBefore: account.balance,
       balanceAfter,
       operatorUserId: dto.operatorUserId ?? null,
-      timestamp: new Date(),
+      timestamp: getIsoDate(),
       visibleToAccountId: account.idAccount,
     });
   }
