@@ -21,6 +21,13 @@ AWS solution diagram TOBE (Draw.io):
 
 ---
 
+App Sequence Diagram:  
+`docs/refinamento/assets/sequence_diagrama.png`
+
+![](docs/refinamento/assets/sequence_diagrama.png)
+
+---
+
 ## Prerequisites
 
 - [Node.js (v24.11.1)](https://nodejs.org/)
