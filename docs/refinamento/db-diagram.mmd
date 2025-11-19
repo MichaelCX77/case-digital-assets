@@ -1,0 +1,65 @@
+---
+title: Banking System Database Diagram
+---
+
+```mesmaid
+erDiagram
+    User {
+      String id_user PK "User ID"
+      String name "Name"
+      String email "Email"
+      String password "Password"
+      String role_id FK "Role ID"
+      DateTime created_at
+      DateTime updated_at
+    }
+    Role {
+      String id PK "Role ID"
+      String name "Name"
+      String description "Description"
+      DateTime created_at
+      DateTime updated_at
+    }
+    AccountType {
+      String id_account_type PK "Account Type ID"
+      String name "Name"
+      String description "Description"
+      DateTime created_at
+      DateTime updated_at
+    }
+    Account {
+      String id_account PK "Account ID"
+      Float balance "Balance"
+      String account_type_id FK "Account Type ID"
+      String status "Status"
+      DateTime created_at
+      DateTime updated_at
+    }
+    UserAccount {
+      String account_id PK, FK "Account ID"
+      String user_id PK, FK "User ID"
+      DateTime created_at
+      DateTime updated_at
+    }
+    Transaction {
+      String id_transaction PK "Transaction ID"
+      String type PK "Transaction Type"
+      String? source_account_id "Source Account ID"
+      String? destination_account_id "Destination Account ID"
+      Float amount "Amount"
+      DateTime timestamp
+      Float balance_before
+      Float balance_after
+      String? operator_user_id "Operator User Identifier"
+      String visible_to_account_id "Account (Visible for)"
+      DateTime created_at
+      DateTime updated_at
+    }
+
+    // Relationships
+    Role ||--o{ User : ""
+    AccountType ||--o{ Account : ""
+    Account ||--o{ UserAccount : ""
+    User ||--o{ UserAccount : ""
+    Account ||--o{ Transaction : "visible_to_account_id"
+```
