@@ -7,10 +7,17 @@ Below are instructions to run and understand the project locally with one comman
 
 ## Solution Diagram
 
-AWS solution diagram (Draw.io):  
-`docs/refinamento/diagrama_aws.drawio`
+AWS solution diagram ASIS (Draw.io):  
+`docs/refinamento/assets/aws_soluction_diagram_asis.png`
 
-![](docs/refinamento/assets/aws_soluction_diagram.png)
+![](docs/refinamento/assets/aws_soluction_diagram_asis.png)
+
+---
+
+AWS solution diagram TOBE (Draw.io):  
+`docs/refinamento/assets/aws_soluction_diagram_tobe.png`
+
+![](docs/refinamento/assets/aws_soluction_diagram_tobe.png)
 
 ---
 
