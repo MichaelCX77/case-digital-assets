@@ -1,6 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsUUID, IsOptional, IsEnum } from 'class-validator';
-import { AccountStatus } from '../enum/account-status.enum';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsUUID } from 'class-validator';
 
 /**
  * DTO for creating a new account.
