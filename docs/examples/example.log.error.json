@@ -1,0 +1,12 @@
+{
+    "correlationId": "0ede33df-035a-4506-a9d8-1c728e32c332",
+    "level": "error",
+    "message": "Internal server error",
+    "method": "DELETE",
+    "stack": "Error: Erro desconhecido\n    at UserController.delete (C:\\Users\\mayco\\projects\\case-digital-assets\\case_itau_nodejs\\backend\\src\\modules\\user\\user.controller.ts:81:11)\n    at C:\\Users\\mayco\\projects\\case-digital-assets\\case_itau_nodejs\\backend\\node_modules\\@nestjs\\core\\router\\router-execution-context.js:38:29",
+    "statusCode": 500,
+    "timestamp": "2025-11-18T23:17:08.431Z",
+    "transactionId": "1d413414-f620-4c64-b35e-5cfa28aa9ac3",
+    "url": "/users/0ede33df-035a-4506-a9d8-1c728e32c332?correlation-id=b08d8399-5272-4ab6-9694-6af82a2abde1",
+    "userId": "e36960c4-539e-45c4-b848-521074f955bc"
+}

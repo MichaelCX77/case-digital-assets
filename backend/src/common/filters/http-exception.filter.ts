@@ -1,8 +1,3 @@
-/**
- * Handles exceptions globally for HTTP and Prisma errors,
- * providing structured API error responses and logging each exception once
- * with Winston using the established log format.
- */
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, Inject } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Request, Response } from 'express';
@@ -17,11 +12,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    // Tipo extendido para acessar .transactionId do middleware
     const req = ctx.getRequest<Request & { transactionId?: string }>();
     const res = ctx.getResponse<Response>();
 
-    // Contextual info: busca primeiro de req.transactionId, depois do header
+    // Contextual info
     const correlationId = req.headers['correlation-id'] || req.headers['x-correlation-id'] || undefined;
     const userId = (req.user as any)?.userId;
     const method = req.method;
@@ -36,41 +30,33 @@ export class HttpExceptionFilter implements ExceptionFilter {
     let message: string;
     let detail: unknown = undefined;
 
-    // Prisma P2003 (FK constraint) treatment
-    if (
-      exception instanceof Prisma.PrismaClientKnownRequestError &&
-      exception.code === 'P2003'
-    ) {
-      const field = exception?.meta?.field_name;
-      const model = exception?.meta?.model;
-      message = field && model
-        ? `O valor informado para '${field}' não existe na tabela '${model}'.`
-        : field
-          ? `O valor informado para '${field}' é inválido ou não faz referência a um registro existente.`
-          : "Foi enviado um dado relacionado inválido. Verifique se os IDs enviados realmente existem.";
-      code = exception.code;
-    } else {
-      // Other HTTP/unexpected errors
-      let responseBody = exception instanceof HttpException
-        ? exception.getResponse()
-        : { message: exception.message || 'Internal server error' };
+    let responseBody = exception instanceof HttpException
+      ? exception.getResponse()
+      : { message: exception.message || 'Internal server error' };
 
-      message = typeof responseBody === 'object' && responseBody !== null && 'message' in responseBody
-        ? String((responseBody as any).message)
-        : typeof responseBody === 'string'
-          ? responseBody
-          : "Internal server error";
+    message = typeof responseBody === 'object' && responseBody !== null && 'message' in responseBody
+      ? String((responseBody as any).message)
+      : typeof responseBody === 'string'
+        ? responseBody
+        : "Internal server error";
 
-      detail = typeof responseBody === 'object' && responseBody !== null && 'detail' in responseBody
-        ? responseBody.detail
-        : undefined;
+    detail = typeof responseBody === 'object' && responseBody !== null && 'detail' in responseBody
+      ? responseBody.detail
+      : undefined;
 
-      if (typeof message === "string") {
-        message = message.replace(/"/g, "'");
-      }
+    if (typeof message === "string") {
+      message = message.replace(/"/g, "'");
     }
 
-    // Force "Internal server error" for status 500
+    // Padroniza saída do 4XX
+    if (statusCode >= 400 && statusCode < 500) {
+      if (!message || message === 'Internal server error') {
+        message = 'Client error';
+      }
+      // Você pode customizar outros campos aqui, se quiser
+    }
+
+    // Força "Internal server error" para status 500
     if (statusCode === 500) {
       message = "Internal server error";
     }

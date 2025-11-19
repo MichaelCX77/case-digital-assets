@@ -20,14 +20,13 @@ export class AccountRepository {
 
   /**
    * Creates a new account.
-   * @param data Object containing account balance, accountTypeId and status.
+   * @param data Object containing account balance and accountTypeId.
    */
-  async create(data: { balance: number; accountTypeId: string; status: string }) {
+  async create(data: { balance: number; accountTypeId: string }) {
     return this.prisma.account.create({
       data: {
         balance: data.balance,
-        accountTypeId: data.accountTypeId,
-        status: data.status,
+        accountTypeId: data.accountTypeId
       },
       include: { accountType: true },
     });
